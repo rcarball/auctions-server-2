@@ -1,0 +1,12 @@
+# Eclipse configuration
+.classpath
+.project
+.settings/
+
+# Compiled class files
+bin/
+build/
+
+# Gradle dependencies
+.gradle/
+/.DS_Store
