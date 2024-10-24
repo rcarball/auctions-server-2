@@ -208,12 +208,12 @@ public class AuctionsController {
 	    }
 	}
 
-	// Converts a Category to a CategoryDTO
+	// Converts a Category to a CategoryDTO (Assembler Method)
 	private CategoryDTO categoryToDTO(Category category) {
 		return new CategoryDTO(category.getName());
 	}
 	
-	// Converts an Article to an ArticleDTO
+	// Converts an Article to an ArticleDTO (Assembler Method)
 	private ArticleDTO articleToDTO(Article article, float exchangeRate, String currency) {
 		return new ArticleDTO(article.getId(), 
 				              article.getTitle(), 
