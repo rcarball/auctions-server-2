@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import es.deusto.sd.auctions.external.CurrencyServiceGateway;
+import es.deusto.sd.auctions.external.ICurrencyServiceGateway;
 
 @Service
 public class CurrencyService {
@@ -21,9 +21,9 @@ public class CurrencyService {
 	}
 	
 	private static final String DEFAULT_CURRENCY = "EUR";
-	private final CurrencyServiceGateway currencyGateway;
+	private final ICurrencyServiceGateway currencyGateway;
 
-    public CurrencyService(CurrencyServiceGateway currencyGateway) {
+    public CurrencyService(ICurrencyServiceGateway currencyGateway) {
         this.currencyGateway = currencyGateway;
     }	
 	

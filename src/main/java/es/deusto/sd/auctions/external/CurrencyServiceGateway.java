@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class CurrencyServiceGateway {
+public class CurrencyServiceGateway implements ICurrencyServiceGateway {
 
     private final String API_URL = "https://api.freecurrencyapi.com/v1/latest";
     private final String API_KEY = "fca_live_DgSapgilaF9fv0FzhAj6VwxXETqUbsIFAKMrGj2s";
@@ -30,7 +30,8 @@ public class CurrencyServiceGateway {
         this.objectMapper = new ObjectMapper();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")    
+    @Override
 	public Optional<Float> getExchangeRate(String baseCurrency, String targetCurrency) {
         // Build the URL
         String url = API_URL + "?apikey=" + API_KEY +  "&base_currency=" + baseCurrency + "&currencies=" + targetCurrency;
