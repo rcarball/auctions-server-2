@@ -5,6 +5,8 @@
  */
 package es.deusto.sd.auctions.facade;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -95,7 +97,10 @@ public class AuctionsController {
 			@Parameter(name = "currency", description = "Currency", required = true, example = "GBP")
 			@RequestParam("currency") String currency) {
 		try {
-			List<Article> articles = auctionsService.getArticlesByCategoryName(categoryName);
+			// Decode the category name to handle spaces and special characters
+			String decodedCategoryName = URLDecoder.decode(categoryName, StandardCharsets.UTF_8);
+			
+			List<Article> articles = auctionsService.getArticlesByCategoryName(decodedCategoryName);
 						
 			if (articles.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
