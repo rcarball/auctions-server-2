@@ -65,7 +65,7 @@ public class AuthController {
     )    
     @PostMapping("/logout")    
     public ResponseEntity<Void> logout(
-    		@Parameter(name = "token", description = "Authorization token", required = true, example = "Bearer 1924888a05c")
+    		@Parameter(name = "token", description = "Authorization token", required = true, example = "19248884055")
     		@RequestBody String token) {    	
         Optional<Boolean> result = authService.logout(token);
     	
