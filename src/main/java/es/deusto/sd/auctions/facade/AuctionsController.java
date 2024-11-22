@@ -198,7 +198,12 @@ public class AuctionsController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 	    	
-	        auctionsService.makeBid(user, articleId, amount * exchangeRate.get());
+			// If the currency is not EUR, convert the amount to EUR
+			if (!currency.equals("EUR")) {			    
+			    amount /= exchangeRate.get(); // Inverting the exchange rate
+			}			
+			
+	        auctionsService.makeBid(user, articleId, amount);
 	        
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	    } catch (Exception e) {

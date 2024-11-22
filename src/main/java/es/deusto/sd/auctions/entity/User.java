@@ -103,7 +103,7 @@ public class User {
 	// hashCode and equals
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, nickname);
+		return Objects.hash(email, id);
 	}
 
 	@Override
@@ -115,7 +115,6 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return Objects.equals(email, other.email) && 
-			   Objects.equals(nickname, other.nickname);
+		return Objects.equals(email, other.email) && Objects.equals(id, other.id);
 	}
 }
