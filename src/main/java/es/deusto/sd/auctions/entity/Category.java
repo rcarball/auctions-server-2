@@ -28,7 +28,7 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Article> articles = new ArrayList<>();
     
 	// Constructor without parameters
@@ -55,6 +55,11 @@ public class Category {
 
 	public void setArticles(List<Article> articles) {
 		this.articles = articles;
+	}
+	
+	public void addArticle(Article article) {
+	    articles.add(article);
+	    article.setCategory(this);
 	}
 
 	// hashCode and equals

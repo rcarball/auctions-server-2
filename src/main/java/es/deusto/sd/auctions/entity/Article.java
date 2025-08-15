@@ -55,9 +55,9 @@ public class Article {
 	}
 
 	// Constructor with parameters
-	public Article(long id, String title, float initialPrice, 
-			       Date auctionEnd, Category category, User owner) {
-		this.id = id;
+	// Note: id is auto-generated, so it should not be included in the constructor
+	public Article(String title, float initialPrice, 
+			       Date auctionEnd, Category category, User owner) {		
 		this.title = title;
 		this.initialPrice = initialPrice;
 		this.auctionEnd = auctionEnd;
