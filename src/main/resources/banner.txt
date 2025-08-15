@@ -5,4 +5,4 @@
 [32m / ___ \ (__| |_| | (_) | | | \__ \/ ___ \|  __/| |   \ V / / __/ [0m
 [34m/_/   \_\___|\__|_|\___/|_| |_|___/_/   \_\_|  |___|   \_/ |_____|[0m
 [34m                                                              [0m
-[34m :: Strava :: Spring Boot ${spring-boot.version} ::			[0m
+[34m :: AuctionsAPI v2 :: Spring Boot ${spring-boot.version} ::			[0m
