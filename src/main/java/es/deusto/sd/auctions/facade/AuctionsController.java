@@ -93,12 +93,12 @@ public class AuctionsController {
 	@GetMapping("/categories/{categoryName}/articles")
 	public ResponseEntity<List<ArticleDTO>> getArticlesByCategory(
 			@Parameter(name = "categoryName", description = "Name of the category", required = true, example = "Electronics")
-			@PathVariable("categoryName") String categoryName,
+			@PathVariable("categoryName") String category,
 			@Parameter(name = "currency", description = "Currency", required = true, example = "GBP")
-			@RequestParam("currency") String currency) {
+			@RequestParam("currency") String targetCurrency) {
 		try {
 			// Decode the category name to handle spaces and special characters
-			String decodedCategoryName = URLDecoder.decode(categoryName, StandardCharsets.UTF_8);
+			String decodedCategoryName = URLDecoder.decode(category, StandardCharsets.UTF_8);
 			
 			List<Article> articles = auctionsService.getArticlesByCategoryName(decodedCategoryName);
 						
@@ -106,14 +106,14 @@ public class AuctionsController {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
 
-			Optional<Float> exchangeRate = currencyService.getExchangeRate(currency);
+			Optional<Float> exchangeRate = currencyService.getExchangeRate(targetCurrency);
 			
 			if (!exchangeRate.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 			
 			List<ArticleDTO> dtos = new ArrayList<>();
-			articles.forEach(article -> dtos.add(articleToDTO(article, exchangeRate.get(), currency)));
+			articles.forEach(article -> dtos.add(articleToDTO(article, exchangeRate.get(), targetCurrency)));
 			
 			return new ResponseEntity<>(dtos, HttpStatus.OK);
 		} catch (RuntimeException e) {
@@ -138,20 +138,20 @@ public class AuctionsController {
 	@GetMapping("/articles/{articleId}/details")
 	public ResponseEntity<ArticleDTO> getArticleDetails(
 			@Parameter(name = "articleId", description = "Id of the article", required = true, example = "1")
-			@PathVariable("articleId") long articleId,
+			@PathVariable("articleId") long id,
 			@Parameter(name = "currency", description = "Currency", required = true, example = "EUR")
-			@RequestParam("currency") String currency) {
+			@RequestParam("currency") String targetCurrency) {
 		try {
-			Article article = auctionsService.getArticleById(articleId);			
+			Article article = auctionsService.getArticleById(id);			
 			
 			if (article != null) {				
-				Optional<Float> exchangeRate = currencyService.getExchangeRate(currency);
+				Optional<Float> exchangeRate = currencyService.getExchangeRate(targetCurrency);
 				
 				if (!exchangeRate.isPresent()) {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
 				
-				ArticleDTO dto = articleToDTO(article, exchangeRate.get(), currency);
+				ArticleDTO dto = articleToDTO(article, exchangeRate.get(), targetCurrency);
 				
 				return new ResponseEntity<>(dto, HttpStatus.OK);
 			} else {
@@ -178,13 +178,13 @@ public class AuctionsController {
 	@PostMapping("/articles/{articleId}/bid")
 	public ResponseEntity<Void> makeBid(
 			@Parameter(name = "articleId", description = "ID of the article to bid on", required = true, example = "1")		
-			@PathVariable("articleId") long articleId,
+			@PathVariable("articleId") long id,
 			@Parameter(name = "amount", description = "Bid amount", required = true, example = "1001")
-    		@RequestParam("amount") float amount,
+    		@RequestParam("amount") float price,
     		@Parameter(name = "currency", description = "Currency", required = true, example = "EUR")
-			@RequestParam("currency") String currency,
-    		@Parameter(name = "token", description = "Authorization token", required = true, example = "1727786726773")
-    		@RequestBody String token) { 
+			@RequestParam("currency") String currentCurrency,
+			@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Authorization token in plain text", required = true)
+			@RequestBody String token) { 
 	    try {	    	
 	    	User user = authService.getUserByToken(token);
 	    	
@@ -192,18 +192,18 @@ public class AuctionsController {
 	    		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	    	}
 	    	
-			Optional<Float> exchangeRate = currencyService.getExchangeRate(currency);
+			Optional<Float> exchangeRate = currencyService.getExchangeRate(currentCurrency);
 			
 			if (!exchangeRate.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 	    	
 			// If the currency is not EUR, convert the amount to EUR
-			if (!currency.equals("EUR")) {			    
-			    amount /= exchangeRate.get(); // Inverting the exchange rate
+			if (!currentCurrency.equals("EUR")) {			    
+			    price /= exchangeRate.get(); // Inverting the exchange rate
 			}			
 			
-	        auctionsService.makeBid(user, articleId, amount);
+	        auctionsService.makeBid(user, id, price);
 	        
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	    } catch (Exception e) {
