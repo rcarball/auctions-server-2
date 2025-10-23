@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import es.deusto.sd.auctions.dto.CredentialsDTO;
 import es.deusto.sd.auctions.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -43,7 +42,7 @@ public class AuthController {
     )
     @PostMapping("/login")
     public ResponseEntity<String> login(
-    		@Parameter(name = "credentials", description = "User's credentials", required = true)    	
+    		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User's credentials", required = true)
     		@RequestBody CredentialsDTO credentials) {    	
         Optional<String> token = authService.login(credentials.getEmail(), credentials.getPassword());
         
@@ -65,7 +64,7 @@ public class AuthController {
     )    
     @PostMapping("/logout")    
     public ResponseEntity<Void> logout(
-    		@Parameter(name = "token", description = "Authorization token", required = true, example = "19248884055")
+    		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Authorization token in plain text", required = true)
     		@RequestBody String token) {    	
         Optional<Boolean> result = authService.logout(token);
     	
