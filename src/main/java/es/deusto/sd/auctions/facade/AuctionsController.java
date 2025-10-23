@@ -95,7 +95,7 @@ public class AuctionsController {
 			@Parameter(name = "categoryName", description = "Name of the category", required = true, example = "Electronics")
 			@PathVariable("categoryName") String category,
 			@Parameter(name = "currency", description = "Currency", required = true, example = "GBP")
-			@RequestParam("currency") String targetCurrency) {
+			@RequestParam("currency") String currentCurrency) {
 		try {
 			// Decode the category name to handle spaces and special characters
 			String decodedCategoryName = URLDecoder.decode(category, StandardCharsets.UTF_8);
@@ -106,14 +106,14 @@ public class AuctionsController {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
 
-			Optional<Float> exchangeRate = currencyService.getExchangeRate(targetCurrency);
+			Optional<Float> exchangeRate = currencyService.getExchangeRate(currentCurrency);
 			
 			if (!exchangeRate.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 			
 			List<ArticleDTO> dtos = new ArrayList<>();
-			articles.forEach(article -> dtos.add(articleToDTO(article, exchangeRate.get(), targetCurrency)));
+			articles.forEach(article -> dtos.add(articleToDTO(article, exchangeRate.get(), currentCurrency)));
 			
 			return new ResponseEntity<>(dtos, HttpStatus.OK);
 		} catch (RuntimeException e) {
@@ -140,18 +140,18 @@ public class AuctionsController {
 			@Parameter(name = "articleId", description = "Id of the article", required = true, example = "1")
 			@PathVariable("articleId") long id,
 			@Parameter(name = "currency", description = "Currency", required = true, example = "EUR")
-			@RequestParam("currency") String targetCurrency) {
+			@RequestParam("currency") String currentCurrency) {
 		try {
 			Article article = auctionsService.getArticleById(id);			
 			
 			if (article != null) {				
-				Optional<Float> exchangeRate = currencyService.getExchangeRate(targetCurrency);
+				Optional<Float> exchangeRate = currencyService.getExchangeRate(currentCurrency);
 				
 				if (!exchangeRate.isPresent()) {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
 				
-				ArticleDTO dto = articleToDTO(article, exchangeRate.get(), targetCurrency);
+				ArticleDTO dto = articleToDTO(article, exchangeRate.get(), currentCurrency);
 				
 				return new ResponseEntity<>(dto, HttpStatus.OK);
 			} else {
