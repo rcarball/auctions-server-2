@@ -15,8 +15,6 @@ The server now interacts with:
 - 🧠 **H2 database** (via JPA) for data persistence.  
 - 💱 **Free Currency Conversion API (https://freecurrencyapi.com/)** for displaying prices in different currencies.
 
-The design builds on the foundations laid in Version 1, expanding both complexity and realism, while preserving modularity and maintainability.
-
 ### 🌐 REST API Endpoints
 
 | Method | Endpoint | Description |
@@ -27,7 +25,6 @@ The design builds on the foundations laid in Version 1, expanding both complexit
 | **GET**  | `/auctions/categories/{categoryName}/articles` | Get all articles by category |
 | **GET**  | `/auctions/articles/{articleId}/details` | Retrieve detailed article information |
 | **POST** | `/auctions/articles/{articleId}/bid` | Place a bid on an article |
-| **GET**  | `/currency/{from}/{to}` | Convert between currencies (via external API) |
 
 💡 Swagger UI: [http://localhost:8081/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)  
 📄 OpenAPI Docs: [http://localhost:8081/v3/api-docs](http://localhost:8080/v3/api-docs)
@@ -47,8 +44,6 @@ El servidor se comunica con:
 - 🧠 Una **base de datos H2** (usando JPA) para la persistencia de datos.  
 - 💱 **Free Currency Conversion API (https://freecurrencyapi.com/)** para mostrar precios en distintas divisas.
 
-Esta versión amplía la base establecida en la primera versión, aumentando la complejidad y la fidelidad del sistema sin comprometer su claridad ni modularidad.
-
 ### 🌐 Endpoints del API REST
 
 | Método | Endpoint | Descripción |
@@ -59,7 +54,6 @@ Esta versión amplía la base establecida en la primera versión, aumentando la 
 | **GET**  | `/auctions/categories/{categoryName}/articles` | Obtener artículos por categoría |
 | **GET**  | `/auctions/articles/{articleId}/details` | Consultar detalles de un artículo |
 | **POST** | `/auctions/articles/{articleId}/bid` | Realizar una puja |
-| **GET**  | `/currency/{from}/{to}` | Conversión de divisas (vía API externa) |
 
 💡 Swagger UI: [http://localhost:8081/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)  
 📄 OpenAPI Docs: [http://localhost:8081/v3/api-docs](http://localhost:8080/v3/api-docs)
