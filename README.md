@@ -2,7 +2,7 @@
 
 # 🚀 Auctions Server - Version 2
 
-## 📘 Description (English)
+## 📘 Description
 
 This repository contains the **second version** of the *Auctions Server*, an **evolution of [Version 1](https://github.com/rcarball/auctions-server-1)**. It extends the functionality introduced in the first version by adding **database persistence** and **external service integration** for currency conversion — creating a more realistic simulation of an online auction platform.
 
@@ -13,7 +13,7 @@ This version maintains the **Spring Boot REST API** architecture while incorpora
 
 The server now interacts with:
 - 🧠 **H2 database** (via JPA) for data persistence.  
-- 💱 **Free Currency Conversion API (https://freecurrencyapi.com/)** for displaying prices in different currencies.
+- 💱 **Free Currency Conversion API** ([https://freecurrencyapi.com/](https://freecurrencyapi.com/)) for displaying prices in different currencies.
 
 ### 🌐 REST API Endpoints
 
@@ -26,8 +26,8 @@ The server now interacts with:
 | **GET**  | `/auctions/articles/{articleId}/details` | Retrieve detailed article information |
 | **POST** | `/auctions/articles/{articleId}/bid` | Place a bid on an article |
 
-💡 Swagger UI: [http://localhost:8081/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)  
-📄 OpenAPI Docs: [http://localhost:8081/v3/api-docs](http://localhost:8080/v3/api-docs)
+💡 Swagger UI: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)  
+📄 OpenAPI Docs: [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
 
 ---
 
@@ -42,7 +42,7 @@ Mantiene la arquitectura **Spring Boot REST API** e introduce nuevos patrones de
 
 El servidor se comunica con:
 - 🧠 Una **base de datos H2** (usando JPA) para la persistencia de datos.  
-- 💱 **Free Currency Conversion API (https://freecurrencyapi.com/)** para mostrar precios en distintas divisas.
+- 💱 La **Free Currency Conversion API** ([https://freecurrencyapi.com/](https://freecurrencyapi.com/)) para mostrar precios en distintas divisas.
 
 ### 🌐 Endpoints del API REST
 
@@ -55,8 +55,26 @@ El servidor se comunica con:
 | **GET**  | `/auctions/articles/{articleId}/details` | Consultar detalles de un artículo |
 | **POST** | `/auctions/articles/{articleId}/bid` | Realizar una puja |
 
-💡 Swagger UI: [http://localhost:8081/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)  
-📄 OpenAPI Docs: [http://localhost:8081/v3/api-docs](http://localhost:8080/v3/api-docs)
+💡 Swagger UI: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)  
+📄 OpenAPI Docs: [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
+
+---
+
+## ⚙️ Tech Stack & Build
+
+### 🔧 Java & Build
+- ☕ **Java**: 21
+- 🧱 **Build**: Gradle  
+- 🔌 **Plugins**:
+  - `org.springframework.boot` **3.5.7**
+  - `io.spring.dependency-management` **1.1.6**
+
+### 📦 Dependencies
+- `org.springframework.boot:spring-boot-starter-web`
+- `org.springframework.boot:spring-boot-starter-data-jpa`
+- `com.h2database:h2`
+- `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13`
+- `org.springframework.boot:spring-boot-starter-test`
 
 ---
 
