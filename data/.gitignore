@@ -1,3 +1,5 @@
-/auctionsdb.mv.db
-/auctionsdb.trace.db
-/.DS_Store
+# Keep the ./data folder in the repository, but ignore the generated H2 database files.
+/*.mv.db
+/*.trace.db
+/*.lock.db
+.DS_Store

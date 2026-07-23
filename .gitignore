@@ -1,21 +1,33 @@
-# Eclipse configuration
+# ===================== Build output =====================
+build/
+bin/
+out/
+
+# ===================== Gradle =====================
+.gradle/
+# NOTE: the Gradle wrapper is committed on purpose (gradlew, gradlew.bat and
+# gradle/wrapper/*). It lets anyone build the project and import it into an IDE
+# without installing Gradle, so it must NOT be ignored.
+
+# ===================== Eclipse / Spring Tool Suite =====================
 .classpath
 .project
 .settings/
+.factorypath
+.apt_generated/
 
-# Compiled class files
-bin/
-build/
+# ===================== IntelliJ IDEA =====================
+.idea/
+*.iml
+*.ipr
+*.iws
 
-# Gradle dependencies
-.gradle/
-/.DS_Store
+# ===================== VS Code =====================
+.vscode/
 
-# Ignore Gradle project-specific cache directory
-.gradle
+# ===================== Kotlin =====================
+.kotlin/
 
-# Ignore Gradle build output directory
-build
-
-# Ignore Kotlin plugin data
-.kotlin
+# ===================== OS files =====================
+.DS_Store
+Thumbs.db
