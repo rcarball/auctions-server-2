@@ -20,8 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 @Entity
 public class Article {
@@ -36,7 +34,6 @@ public class Article {
     @Column(nullable = false)
     private double initialPrice;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private Date auctionEnd;
 
     @ManyToOne
