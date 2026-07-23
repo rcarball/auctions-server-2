@@ -5,9 +5,10 @@
  */
 package es.deusto.sd.auctions.service;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
@@ -18,9 +19,10 @@ import es.deusto.sd.auctions.entity.User;
 public class AuthService {
 
     private final UserRepository userRepository;
-    
-    // Storage to keep the session of the users that are logged in
-    private static Map<String, User> tokenStore = new HashMap<>(); 
+
+    // Storage to keep the session of the users that are logged in.
+    // ConcurrentHashMap is used because it is accessed from concurrent request threads.
+    private final Map<String, User> tokenStore = new ConcurrentHashMap<>();
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -56,8 +58,11 @@ public class AuthService {
         return tokenStore.get(token);
     }
 
-    // Synchronized method to guarantee unique token generation
-    private static synchronized String generateToken() {
-        return Long.toHexString(System.currentTimeMillis());
+    // Generates a unique, non-guessable session token.
+    // A timestamp-based token is NOT unique (two logins in the same millisecond would
+    // collide, overwriting each other's session) and is predictable. UUID.randomUUID()
+    // provides uniqueness and unpredictability.
+    private static String generateToken() {
+        return UUID.randomUUID().toString();
     }
 }

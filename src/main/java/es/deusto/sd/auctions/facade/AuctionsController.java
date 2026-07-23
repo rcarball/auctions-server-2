@@ -106,7 +106,7 @@ public class AuctionsController {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
 
-			Optional<Float> exchangeRate = currencyService.getExchangeRate(currentCurrency);
+			Optional<Double> exchangeRate = currencyService.getExchangeRate(currentCurrency);
 			
 			if (!exchangeRate.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -117,7 +117,12 @@ public class AuctionsController {
 			
 			return new ResponseEntity<>(dtos, HttpStatus.OK);
 		} catch (RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			// Only "Category not found" maps to 404; any other runtime error is a 500
+			// so we don't hide unexpected failures behind a misleading Not Found.
+			if ("Category not found".equals(e.getMessage())) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -145,7 +150,7 @@ public class AuctionsController {
 			Article article = auctionsService.getArticleById(id);			
 			
 			if (article != null) {				
-				Optional<Float> exchangeRate = currencyService.getExchangeRate(currentCurrency);
+				Optional<Double> exchangeRate = currencyService.getExchangeRate(currentCurrency);
 				
 				if (!exchangeRate.isPresent()) {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -172,15 +177,16 @@ public class AuctionsController {
 	        @ApiResponse(responseCode = "401", description = "Unauthorized: User not authenticated"),
 	        @ApiResponse(responseCode = "404", description = "Not Found: Article not found"),
 	        @ApiResponse(responseCode = "409", description = "Conflict: Bid amount must be greater than the current price"),
+	        @ApiResponse(responseCode = "410", description = "Gone: The auction has already ended"),
 	        @ApiResponse(responseCode = "500", description = "Internal server error")
 	    }
-	)		
+	)
 	@PostMapping("/articles/{articleId}/bid")
 	public ResponseEntity<Void> makeBid(
 			@Parameter(name = "articleId", description = "ID of the article to bid on", required = true, example = "1")		
 			@PathVariable("articleId") long id,
 			@Parameter(name = "amount", description = "Bid amount", required = true, example = "1001")
-    		@RequestParam("amount") float price,
+    		@RequestParam("amount") double price,
     		@Parameter(name = "currency", description = "Currency", required = true, example = "EUR")
 			@RequestParam("currency") String currentCurrency,
 			@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Authorization token in plain text", required = true)
@@ -192,26 +198,32 @@ public class AuctionsController {
 	    		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	    	}
 	    	
-			Optional<Float> exchangeRate = currencyService.getExchangeRate(currentCurrency);
+			Optional<Double> exchangeRate = currencyService.getExchangeRate(currentCurrency);
 			
 			if (!exchangeRate.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 	    	
-			// If the currency is not EUR, convert the amount to EUR
-			if (!currentCurrency.equals("EUR")) {			    
-			    price /= exchangeRate.get(); // Inverting the exchange rate
-			}			
-			
+			// Amounts are stored in EUR, so convert the incoming bid (expressed in the
+			// requested currency) back to EUR by dividing by the exchange rate.
+			// For EUR the rate is 1, so this is a no-op.
+			price /= exchangeRate.get();
+
 	        auctionsService.makeBid(user, id, price);
-	        
+
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	    } catch (Exception e) {
-	        switch (e.getMessage()) {
+	    	// Guard against a null message: switch(null) on a String throws
+	    	// NullPointerException, which would mask the original error.
+	    	String message = (e.getMessage() != null) ? e.getMessage() : "";
+
+	        switch (message) {
 	            case "Article not found":
 	                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	            case "Bid amount must be greater than the current price":
 	                return new ResponseEntity<>(HttpStatus.CONFLICT);
+	            case "Auction has ended":
+	                return new ResponseEntity<>(HttpStatus.GONE);
 	            default:
 	                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	        }
@@ -224,7 +236,7 @@ public class AuctionsController {
 	}
 	
 	// Converts an Article to an ArticleDTO (Assembler Method)
-	private ArticleDTO articleToDTO(Article article, float exchangeRate, String currency) {
+	private ArticleDTO articleToDTO(Article article, double exchangeRate, String currency) {
 		return new ArticleDTO(article.getId(), 
 				              article.getTitle(), 
 				              article.getInitialPrice() * exchangeRate,
