@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -37,13 +38,16 @@ public class DataInitializer {
                 return;
             }			
 			
-			// Create some users
-			User batman = new User("BruceWayne", "batman@dc.com", "Batm@n123!");
-			User spiderman = new User("PeterParker", "spiderman@marvel.com", "Sp!derM4n2023");
-			User superman = new User("ClarkKent", "superman@dc.com", "Sup3rm@n456!");
-			User wonderWoman = new User("DianaPrince", "wonderwoman@dc.com", "Wond3rW0m@n!789");
-			User captainMarvel = new User("CarolDanvers", "captainmarvel@marvel.com", "C@ptMarv3l#987");
-			User blackWidow = new User("NatashaRomanoff", "blackwidow@marvel.com", "Bl@ckWid0w2023");
+			// Create some users.
+			// The password is pre-hashed with SHA-1 to simulate what the client sends
+			// (the client hashes before sending). The User constructor hashes it again
+			// before storing, so the stored value is SHA-1(SHA-1(password)).
+			User batman = new User("BruceWayne", "batman@dc.com", DigestUtils.sha1Hex("Batm@n123!"));
+			User spiderman = new User("PeterParker", "spiderman@marvel.com", DigestUtils.sha1Hex("Sp!derM4n2023"));
+			User superman = new User("ClarkKent", "superman@dc.com", DigestUtils.sha1Hex("Sup3rm@n456!"));
+			User wonderWoman = new User("DianaPrince", "wonderwoman@dc.com", DigestUtils.sha1Hex("Wond3rW0m@n!789"));
+			User captainMarvel = new User("CarolDanvers", "captainmarvel@marvel.com", DigestUtils.sha1Hex("C@ptMarv3l#987"));
+			User blackWidow = new User("NatashaRomanoff", "blackwidow@marvel.com", DigestUtils.sha1Hex("Bl@ckWid0w2023"));
 
 			// Save users
 			userRepository.saveAll(List.of(batman, spiderman, superman, wonderWoman, captainMarvel, blackWidow));			
