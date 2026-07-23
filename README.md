@@ -74,7 +74,29 @@ El servidor se comunica con:
 - `org.springframework.boot:spring-boot-starter-data-jpa`
 - `com.h2database:h2`
 - `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13`
-- `org.springframework.boot:spring-boot-starter-test`
+- `commons-codec:commons-codec` (SHA-1 password hashing)
+
+### ⚙️ Configuration
+- **Database**: H2 file-based database at `./data/auctionsdb` (`spring.datasource.*` in `application.properties`).
+- **Currency service**: the API key is read from `currency.api.key` and can be overridden with the `CURRENCY_API_KEY` environment variable (likewise `CURRENCY_API_URL`). The bundled key is a development default and should be rotated and kept out of version control.
+
+---
+
+## ▶️ How to run
+
+Requires **JDK 21**. From the project root:
+
+```bash
+gradle bootRun
+```
+
+The server starts on **http://localhost:8081**:
+- 💡 Swagger UI: http://localhost:8081/swagger-ui/index.html
+- 🧠 H2 console: http://localhost:8081/h2-console (JDBC URL `jdbc:h2:file:./data/auctionsdb`)
+
+Data is persisted to `./data/auctionsdb`. To start from a **clean database**, stop the server and delete `./data/auctionsdb*` (useful after changing entities or the password scheme).
+
+> ℹ️ No Gradle wrapper is included. Use a local Gradle installation, or generate the wrapper once with `gradle wrapper` and then use `./gradlew bootRun`. Alternatively, import the project into an IDE and run the `AuctionsApplication` class.
 
 ---
 
