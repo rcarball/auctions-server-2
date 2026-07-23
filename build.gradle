@@ -30,6 +30,13 @@ dependencies {
 	// H2 Database for in-memory database
 	runtimeOnly 'com.h2database:h2'
 
+	// H2 web console (moved to its own module in Spring Boot 4)
+	implementation 'org.springframework.boot:spring-boot-h2console'
+
+	// Generates configuration metadata (merges additional-spring-configuration-metadata.json)
+	// so custom properties like currency.api.* are recognised by the IDE.
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
 	// Apache Commons Codec for SHA-1 password hashing (version managed by Spring Boot)
 	implementation 'commons-codec:commons-codec'
 }
