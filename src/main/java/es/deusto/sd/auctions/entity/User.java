@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,14 +51,17 @@ public class User {
 	
 	// Constructor with parameters
 	public User(String nickname, String email, String password) {
-		this.nickname = nickname;		
+		this.nickname = nickname;
 		this.email = email;
-		this.password = password;
+		// Passwords are never stored in plain text: they are hashed with SHA-1
+		// before being persisted (see the "Login" scenario in the case study).
+		this.password = DigestUtils.sha1Hex(password);
 	}
-	
-	// Check if a password is correct
+
+	// Check if a password is correct by comparing the SHA-1 hash of the provided
+	// password against the stored hash (the plain-text password is never kept).
 	public boolean checkPassword(String password) {
-        return this.password.equals(password);
+        return this.password.equals(DigestUtils.sha1Hex(password));
 	}
 
 	//  Getters and setters
@@ -68,12 +73,11 @@ public class User {
 		this.nickname = nickname;
 	}
 
-	public String getPassword() {
-		return password;
-	}
+	// Note: there is no getPassword() on purpose. As an additional security measure
+	// the stored password (a SHA-1 hash) is never exposed outside the class.
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = DigestUtils.sha1Hex(password);
 	}
 
 	public String getEmail() {
@@ -100,10 +104,12 @@ public class User {
 		this.articles = articles;
 	}
 
-	// hashCode and equals
+	// hashCode and equals based on the natural business key (email), which is unique
+	// and non-null. Using the auto-generated id here would be unsafe: it is null until
+	// the entity is persisted and changes on insert, breaking hash-based collections.
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, id);
+		return Objects.hash(email);
 	}
 
 	@Override
@@ -115,6 +121,6 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return Objects.equals(email, other.email) && Objects.equals(id, other.id);
+		return Objects.equals(email, other.email);
 	}
 }

@@ -68,31 +68,31 @@ public class DataInitializer {
 			Date auctionEndDate = calendar.getTime();
 			
 			// Articles of Electronics category
-            Article iphone = new Article("Apple iPhone 14 Pro", 999.99f, auctionEndDate, electronics, batman);
+            Article iphone = new Article("Apple iPhone 14 Pro", 999.99, auctionEndDate, electronics, batman);
             electronics.addArticle(iphone);
-            Article ps5 = new Article("Sony PlayStation 5", 499.99f, auctionEndDate, electronics, spiderman);
+            Article ps5 = new Article("Sony PlayStation 5", 499.99, auctionEndDate, electronics, spiderman);
             electronics.addArticle(ps5);
-            Article macbook = new Article("MacBook Air M2", 1199.99f, auctionEndDate, electronics, wonderWoman);
+            Article macbook = new Article("MacBook Air M2", 1199.99, auctionEndDate, electronics, wonderWoman);
             electronics.addArticle(macbook);
-            Article samsung = new Article("Samsung Galaxy S21", 799.99f, auctionEndDate, electronics, captainMarvel);
+            Article samsung = new Article("Samsung Galaxy S21", 799.99, auctionEndDate, electronics, captainMarvel);
             electronics.addArticle(samsung);
             // Articles of Sporting Goods category
-            Article tennisRacket = new Article("Wilson Tennis Racket", 119.99f, auctionEndDate, sports, batman);
+            Article tennisRacket = new Article("Wilson Tennis Racket", 119.99, auctionEndDate, sports, batman);
             sports.addArticle(tennisRacket);
-            Article soccerBall = new Article("Adidas Soccer Ball", 29.99f, auctionEndDate, sports, blackWidow);
+            Article soccerBall = new Article("Adidas Soccer Ball", 29.99, auctionEndDate, sports, blackWidow);
             sports.addArticle(soccerBall);
-            Article fitbit = new Article("Fitbit Charge 5 Fitness Tracker", 149.99f, auctionEndDate, sports, captainMarvel);
+            Article fitbit = new Article("Fitbit Charge 5 Fitness Tracker", 149.99, auctionEndDate, sports, captainMarvel);
             sports.addArticle(fitbit);
-            Article peloton = new Article("Peloton Exercise Bike", 1899.99f, auctionEndDate, sports, wonderWoman);
+            Article peloton = new Article("Peloton Exercise Bike", 1899.99, auctionEndDate, sports, wonderWoman);
             sports.addArticle(peloton);
             // Articles of Motors category
-            Article tesla = new Article("Tesla Model 3", 42999.99f, auctionEndDate, motors, batman);
+            Article tesla = new Article("Tesla Model 3", 42999.99, auctionEndDate, motors, batman);
             motors.addArticle(tesla);
-            Article civic = new Article("Honda Civic 2021", 21999.99f, auctionEndDate, motors, superman);
+            Article civic = new Article("Honda Civic 2021", 21999.99, auctionEndDate, motors, superman);
             motors.addArticle(civic);
-            Article f150 = new Article("Ford F-150 Pickup Truck", 33999.99f, auctionEndDate, motors, spiderman);
+            Article f150 = new Article("Ford F-150 Pickup Truck", 33999.99, auctionEndDate, motors, spiderman);
             motors.addArticle(f150);
-            Article corvette = new Article( "Chevrolet Corvette Stingray", 59999.99f, auctionEndDate, motors, captainMarvel);
+            Article corvette = new Article( "Chevrolet Corvette Stingray", 59999.99, auctionEndDate, motors, captainMarvel);
             motors.addArticle(corvette);
 
 			// Save categories

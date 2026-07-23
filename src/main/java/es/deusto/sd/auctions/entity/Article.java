@@ -34,7 +34,7 @@ public class Article {
     private String title;
 
     @Column(nullable = false)
-    private float initialPrice;
+    private double initialPrice;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date auctionEnd;
@@ -56,18 +56,20 @@ public class Article {
 
 	// Constructor with parameters
 	// Note: id is auto-generated, so it should not be included in the constructor
-	public Article(String title, float initialPrice, 
-			       Date auctionEnd, Category category, User owner) {		
+	public Article(String title, double initialPrice,
+			       Date auctionEnd, Category category, User owner) {
 		this.title = title;
 		this.initialPrice = initialPrice;
 		this.auctionEnd = auctionEnd;
 		this.category = category;
-		this.category.getArticles().add(this);
 		this.owner = owner;
+		// Note: the article is NOT added to the category's list here. The bidirectional
+		// link is established through Category.addArticle(...) to avoid registering the
+		// article twice.
 	}
 
 	// Get the current price of the article
-	public float getCurrentPrice() {
+	public double getCurrentPrice() {
 		if (bids.isEmpty()) {
 			return initialPrice;
 		}
@@ -89,7 +91,7 @@ public class Article {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -101,11 +103,11 @@ public class Article {
 		this.title = title;
 	}
 
-	public float getInitialPrice() {
+	public double getInitialPrice() {
 		return initialPrice;
 	}
 
-	public void setInitialPrice(float initialPrice) {
+	public void setInitialPrice(double initialPrice) {
 		this.initialPrice = initialPrice;
 	}
 

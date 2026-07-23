@@ -10,8 +10,8 @@ import java.util.Date;
 public class ArticleDTO {
     private long id;
     private String title;
-    private float initialPrice;
-    private float currentPrice;
+    private double initialPrice;
+    private double currentPrice;
     private int bids;
     private Date auctionEnd;
     private String categoryName;
@@ -22,7 +22,7 @@ public class ArticleDTO {
 	public ArticleDTO() { }
     
     // Constructor with parameters
-    public ArticleDTO(long id, String title, float initialPrice, float currentPrice, int bids,
+    public ArticleDTO(long id, String title, double initialPrice, double currentPrice, int bids,
     				  Date auctionEnd, String categoryName, String ownerName, String currency) {
         this.id = id;
         this.title = title;
@@ -52,19 +52,19 @@ public class ArticleDTO {
         this.title = title;
     }
 
-    public float getInitialPrice() {
+    public double getInitialPrice() {
         return initialPrice;
     }
 
-    public void setInitialPrice(float initialPrice) {
+    public void setInitialPrice(double initialPrice) {
         this.initialPrice = initialPrice;
     }
 
-	public float getCurrentPrice() {
+	public double getCurrentPrice() {
 		return currentPrice;
 	}
-    
-	public void setCurrentPrice(float currentPrice) {
+
+	public void setCurrentPrice(double currentPrice) {
 		this.currentPrice = currentPrice;
 	}
 	
