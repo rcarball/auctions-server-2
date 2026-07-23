@@ -26,8 +26,8 @@ The server now interacts with:
 | **GET**  | `/auctions/articles/{articleId}/details` | Retrieve detailed article information |
 | **POST** | `/auctions/articles/{articleId}/bid` | Place a bid on an article |
 
-💡 Swagger UI: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)  
-📄 OpenAPI Docs: [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
+💡 Swagger UI: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)  
+📄 OpenAPI Docs: [http://localhost:8082/v3/api-docs](http://localhost:8082/v3/api-docs)
 
 ---
 
@@ -55,8 +55,8 @@ El servidor se comunica con:
 | **GET**  | `/auctions/articles/{articleId}/details` | Consultar detalles de un artículo |
 | **POST** | `/auctions/articles/{articleId}/bid` | Realizar una puja |
 
-💡 Swagger UI: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)  
-📄 OpenAPI Docs: [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
+💡 Swagger UI: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)  
+📄 OpenAPI Docs: [http://localhost:8082/v3/api-docs](http://localhost:8082/v3/api-docs)
 
 ---
 
@@ -92,9 +92,9 @@ Requires **JDK 21**. From the project root:
 ./gradlew bootRun
 ```
 
-The server starts on **http://localhost:8081**:
-- 💡 Swagger UI: http://localhost:8081/swagger-ui/index.html
-- 🧠 H2 console: http://localhost:8081/h2-console (JDBC URL `jdbc:h2:file:./data/auctionsdb`)
+The server starts on **http://localhost:8082**:
+- 💡 Swagger UI: http://localhost:8082/swagger-ui/index.html
+- 🧠 H2 console: http://localhost:8082/h2-console (JDBC URL `jdbc:h2:file:./data/auctionsdb`)
 
 Data is persisted to `./data/auctionsdb`. To start from a **clean database**, stop the server and delete `./data/auctionsdb*` (useful after changing entities or the password scheme).
 
