@@ -107,4 +107,4 @@ Data is persisted to `./data/auctionsdb`. To start from a **clean database**, st
 
 ---
 
-> 🧠 *This description was generated with the assistance of ChatGPT 5 and has been reviewed and validated to ensure accuracy and correctness.*
+> 🧠 *This description was originally generated with the assistance of ChatGPT 5. It was reviewed and updated in July 2026 with the assistance of Claude Opus 4.8 (Anthropic).*

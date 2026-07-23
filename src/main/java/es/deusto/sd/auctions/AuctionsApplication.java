@@ -1,7 +1,7 @@
 /**
- * This code is based on solutions provided by ChatGPT 4o and 
- * adapted using GitHub Copilot. It has been thoroughly reviewed 
- * and validated to ensure correctness and that it is free of errors.
+ * This code was originally generated with ChatGPT 4o and adapted using GitHub
+ * Copilot. It was reviewed, corrected and updated in July 2026 with the
+ * assistance of Claude Opus 4.8 (Anthropic).
  */
 package es.deusto.sd.auctions;
 
