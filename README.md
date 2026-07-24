@@ -76,7 +76,6 @@ El servidor se comunica con:
 - `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13`
 - `commons-codec:commons-codec` (SHA-1 password hashing)
 - `org.springframework.boot:spring-boot-h2console` (H2 web console — a separate module in Spring Boot 4)
-- `org.springframework.boot:spring-boot-configuration-processor` (annotation processor; generates metadata so custom `currency.api.*` properties are recognised)
 
 ### ⚙️ Configuration
 - **Database**: H2 file-based database at `./data/auctionsdb` (`spring.datasource.*` in `application.properties`).
