@@ -21,8 +21,7 @@ import tools.jackson.databind.ObjectMapper;
 @Component
 public class CurrencyServiceGateway implements ICurrencyServiceGateway {
 
-    // Injected from configuration (application.properties / environment variables)
-    // so that no secret is hard-coded in the source code.
+    // Injected from configuration (application.properties)
     private final String apiUrl;
     private final String apiKey;
 
@@ -49,7 +48,7 @@ public class CurrencyServiceGateway implements ICurrencyServiceGateway {
         String url = apiUrl + "?apikey=" + apiKey + "&base_currency=" + baseCurrency + "&currencies=" + targetCurrency;
 
         try {
-            // Create the request (with a read timeout as well)
+            // Create the request (with a read timeout)
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .timeout(Duration.ofSeconds(5))
