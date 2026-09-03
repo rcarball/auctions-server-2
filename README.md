@@ -1,144 +1,145 @@
-🇪🇸 *Scroll down for the Spanish version / Descripción en castellano a continuación.*
-
-# 🚀 Auctions Server - Version 2
+# 🚀 Auctions Server — Version 2
 
 [![CI](https://github.com/rcarball/auctions-server-2/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rcarball/auctions-server-2/actions/workflows/ci.yml)
 
-## 📘 Description
+## English
 
-This repository contains the **second version** of the *Auctions Server*, an **evolution of [Version 1](https://github.com/rcarball/auctions-server-1)**. It extends the functionality introduced in the first version by adding **database persistence** and **external service integration** for currency conversion — creating a more realistic simulation of an online auction platform.
+### Overview
 
-This version maintains the **Spring Boot REST API** architecture while incorporating additional design patterns:
+Auctions Server V2 evolves [Auctions Server V1](https://github.com/rcarball/auctions-server-1) in the *Auctions Service* teaching case study. It remains intentionally educational rather than production-oriented while adding database persistence and an external currency-conversion integration.
 
-- 🗄️ **Data Access Object (DAO)**
-- 🌐 **Service Gateway**
+It illustrates the Data Access Object and Service Gateway patterns, alongside the patterns introduced in V1. H2/JPA stores the data, and the currency service can use FreeCurrencyAPI when configured.
 
-The server now interacts with:
-- 🧠 **H2 database** (via JPA) for data persistence.  
-- 💱 **Free Currency Conversion API** ([https://freecurrencyapi.com/](https://freecurrencyapi.com/)) for displaying prices in different currencies.
-
-### 🌐 REST API Endpoints
+### REST API
 
 | Method | Endpoint | Description |
-|:--------|:----------------------------------|:----------------------------------------------|
-| **POST** | `/auth/login` | Log in to the system |
-| **POST** | `/auth/logout` | Log out from the system |
-| **GET**  | `/auctions/categories` | Retrieve all available categories |
-| **GET**  | `/auctions/categories/{categoryName}/articles` | Get all articles by category |
-| **GET**  | `/auctions/articles/{articleId}/details` | Retrieve detailed article information |
-| **POST** | `/auctions/articles/{articleId}/bid` | Place a bid on an article |
+|:--|:--|:--|
+| POST | `/auth/login` | Log in and obtain a token |
+| POST | `/auth/logout` | Log out using a token |
+| GET | `/auctions/categories` | Retrieve categories |
+| GET | `/auctions/categories/{categoryName}/articles` | Retrieve a category's articles |
+| GET | `/auctions/articles/{articleId}/details` | Retrieve article details |
+| POST | `/auctions/articles/{articleId}/bid` | Place a bid (requires login) |
 
-💡 Swagger UI: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)  
-📄 OpenAPI Docs: [http://localhost:8082/v3/api-docs](http://localhost:8082/v3/api-docs)
+- Swagger UI: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)
+- OpenAPI document: [http://localhost:8082/v3/api-docs](http://localhost:8082/v3/api-docs)
 
----
+### Configuration
 
-## 📘 Descripción
+- **Database:** H2 file database at `./data/auctionsdb`.
+- **Currency service:** no API key is stored in the repository. Without `CURRENCY_API_KEY`, the example uses local EUR/USD/GBP fallback rates.
+- **Optional live conversion:** set `CURRENCY_API_KEY`; use `CURRENCY_API_URL` only to select another compatible endpoint.
 
-Este repositorio contiene la **segunda versión** del *Servidor de Subastas*, una **evolución de [la Versión 1](https://github.com/rcarball/auctions-server-1)**. Amplía la funcionalidad previamente desarrollada incorporando **persistencia en base de datos** y **comunicación con un servicio externo** para la conversión de divisas, ofreciendo una simulación más realista de una plataforma de subastas en línea.
+### Run on macOS and Linux
 
-Mantiene la arquitectura **Spring Boot REST API** e introduce nuevos patrones de diseño:
-
-- 🗄️ **Data Access Object (DAO)**  
-- 🌐 **Service Gateway**
-
-El servidor se comunica con:
-- 🧠 Una **base de datos H2** (usando JPA) para la persistencia de datos.  
-- 💱 La **Free Currency Conversion API** ([https://freecurrencyapi.com/](https://freecurrencyapi.com/)) para mostrar precios en distintas divisas.
-
-### 🌐 Endpoints del API REST
-
-| Método | Endpoint | Descripción |
-|:--------|:----------------------------------|:----------------------------------------------|
-| **POST** | `/auth/login` | Iniciar sesión |
-| **POST** | `/auth/logout` | Cerrar sesión |
-| **GET**  | `/auctions/categories` | Consultar categorías disponibles |
-| **GET**  | `/auctions/categories/{categoryName}/articles` | Obtener artículos por categoría |
-| **GET**  | `/auctions/articles/{articleId}/details` | Consultar detalles de un artículo |
-| **POST** | `/auctions/articles/{articleId}/bid` | Realizar una puja |
-
-💡 Swagger UI: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)  
-📄 OpenAPI Docs: [http://localhost:8082/v3/api-docs](http://localhost:8082/v3/api-docs)
-
----
-
-## ⚙️ Tech Stack & Build
-
-### 🔧 Java & Build
-- ☕ **Java**: 21
-- 🧱 **Build**: Gradle  
-- 🔌 **Plugins**:
-  - `org.springframework.boot` **4.1.0**
-  - `io.spring.dependency-management` **1.1.6**
-
-### 📦 Dependencies
-- `org.springframework.boot:spring-boot-starter-web`
-- `org.springframework.boot:spring-boot-starter-data-jpa`
-- `com.h2database:h2`
-- `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13`
-- `commons-codec:commons-codec` (SHA-1 password hashing)
-- `org.springframework.boot:spring-boot-h2console` (H2 web console — a separate module in Spring Boot 4)
-
-### ⚙️ Configuration
-- **Database**: H2 file-based database at `./data/auctionsdb` (`spring.datasource.*` in `application.properties`).
-- **Currency service**: configure `CURRENCY_API_KEY` to query FreeCurrencyAPI (and optionally `CURRENCY_API_URL` for another endpoint). No key is stored in the repository; without one, the example uses local EUR/USD/GBP fallback rates.
-
----
-
-## ▶️ How to run
-
-Requires **JDK 21**. From the project root:
+Requires JDK 21. From the repository root:
 
 ```bash
+chmod +x gradlew  # only needed if the executable bit was lost, e.g. after extracting a ZIP
 ./gradlew bootRun
 ```
 
-To enable live currency conversion, set your own FreeCurrencyAPI key before starting the server:
+To enable live currency conversion in macOS or Linux:
 
 ```bash
 export CURRENCY_API_KEY="your-key"
 ./gradlew bootRun
 ```
 
-The server starts on **http://localhost:8082**:
-- 💡 Swagger UI: http://localhost:8082/swagger-ui/index.html
-- 🧠 H2 console: http://localhost:8082/h2-console (JDBC URL `jdbc:h2:file:./data/auctionsdb`)
+The server starts at [http://localhost:8082](http://localhost:8082). The H2 console is at [http://localhost:8082/h2-console](http://localhost:8082/h2-console), using `jdbc:h2:file:./data/auctionsdb`. To reset the example data, stop the server and remove the files matching `./data/auctionsdb*`.
 
-Data is persisted to `./data/auctionsdb`. To start from a **clean database**, stop the server and delete `./data/auctionsdb*` (useful after changing entities or the password scheme).
+The Gradle wrapper is included; no local Gradle installation is required. On Windows, use `gradlew.bat bootRun` and set the key with `$env:CURRENCY_API_KEY="your-key"` in PowerShell. In Eclipse or Spring Tool Suite, import the folder as an existing Gradle project and run `AuctionsApplication`.
 
-> ℹ️ The Gradle **wrapper is included**, so no local Gradle installation is required (on Windows use `gradlew.bat bootRun`). The first run downloads the pinned Gradle version. To use it in **Eclipse / Spring Tool Suite**: *File → Import… → Gradle → Existing Gradle Project*, select the project folder, and then run the `AuctionsApplication` class (or `./gradlew bootRun`).
-
----
-
-## 🧪 Testing / Pruebas
-
-Run the automated test suite from the project root:
+### Tests and continuous integration
 
 ```bash
 ./gradlew test
 ```
 
-The suite includes unit tests for authentication and currency conversion, persistence tests against H2 for the auction service, and `MockMvc` tests for the REST controllers. The controller tests exercise the HTTP contract used in Swagger UI or Postman — routes, request parameters, JSON credentials and response codes — without starting a network server or calling the external currency service.
+The suite includes unit tests for authentication and currency conversion, H2 persistence tests for the auction service, and `MockMvc` tests for the REST controllers. The controller tests validate the HTTP contract without starting a network server or calling the external currency service.
 
-La batería incluye pruebas unitarias de autenticación y conversión de moneda, pruebas de persistencia contra H2 para el servicio de subastas y pruebas `MockMvc` de los controladores REST. Estas últimas verifican automáticamente el mismo contrato HTTP que se explora con Swagger UI o Postman —rutas, parámetros, credenciales JSON y códigos de respuesta— sin iniciar un servidor de red ni llamar al servicio externo de divisas.
+The [CI workflow](.github/workflows/ci.yml) runs the test suite for pushes to `master` and pull requests. The `master` branch requires the `test` check to pass before changes are integrated.
 
-The [CI workflow](.github/workflows/ci.yml) runs this command for changes to `master` and for pull requests.
-
----
-
-## ✒️ Authors / Autoría
-
-**Carballedo, R. & Cortázar, R.**  
-*Faculty of Engineering – University of Deusto*
-
----
-
-## ⚖️ License / Licencia
+### License and authorship
 
 This project is licensed under the [MIT License](LICENSE).
 
-Este proyecto se distribuye bajo la [licencia MIT](LICENSE).
+Faculty of Engineering, University of Deusto — Academic year 2026–27.
+
+### AI assistance and review disclosure
+
+The initial version of this codebase was developed with partial assistance from ChatGPT (OpenAI) and GitHub Copilot.
+
+From July to September 2026, the codebase and documentation were reviewed and audited using Claude Opus (Anthropic) and Codex (OpenAI). The resulting version was tested and refined to identify and correct issues within the scope of those verification activities.
 
 ---
 
-> 🧠 *This description was originally generated with the assistance of ChatGPT 5. It was reviewed and updated in July 2026 with the assistance of Claude Opus 4.8 (Anthropic).*
+## Español
+
+### Descripción general
+
+Auctions Server V2 evoluciona [Auctions Server V1](https://github.com/rcarball/auctions-server-1) dentro del caso docente *Auctions Service*. Mantiene un propósito deliberadamente educativo, no productivo, e incorpora persistencia en base de datos e integración con un servicio externo de conversión de moneda.
+
+Ilustra los patrones Data Access Object y Service Gateway, además de los introducidos en V1. H2/JPA almacena los datos y el servicio de moneda puede usar FreeCurrencyAPI cuando se configura.
+
+### API REST
+
+| Método | Endpoint | Descripción |
+|:--|:--|:--|
+| POST | `/auth/login` | Iniciar sesión y obtener un token |
+| POST | `/auth/logout` | Cerrar sesión con un token |
+| GET | `/auctions/categories` | Consultar categorías |
+| GET | `/auctions/categories/{categoryName}/articles` | Consultar los artículos de una categoría |
+| GET | `/auctions/articles/{articleId}/details` | Consultar los detalles de un artículo |
+| POST | `/auctions/articles/{articleId}/bid` | Realizar una puja (requiere sesión) |
+
+- Swagger UI: [http://localhost:8082/swagger-ui/index.html](http://localhost:8082/swagger-ui/index.html)
+- Documento OpenAPI: [http://localhost:8082/v3/api-docs](http://localhost:8082/v3/api-docs)
+
+### Configuración
+
+- **Base de datos:** base de datos H2 en fichero, en `./data/auctionsdb`.
+- **Servicio de moneda:** el repositorio no guarda ninguna clave de API. Sin `CURRENCY_API_KEY`, el ejemplo emplea tasas locales de respaldo para EUR/USD/GBP.
+- **Conversión real opcional:** define `CURRENCY_API_KEY`; usa `CURRENCY_API_URL` solo para seleccionar otro endpoint compatible.
+
+### Ejecución en macOS y Linux
+
+Requiere JDK 21. Desde la raíz del repositorio:
+
+```bash
+chmod +x gradlew  # solo si se ha perdido el permiso, por ejemplo tras extraer un ZIP
+./gradlew bootRun
+```
+
+Para activar la conversión de moneda real en macOS o Linux:
+
+```bash
+export CURRENCY_API_KEY="your-key"
+./gradlew bootRun
+```
+
+El servidor queda disponible en [http://localhost:8082](http://localhost:8082). La consola H2 está en [http://localhost:8082/h2-console](http://localhost:8082/h2-console), con la URL JDBC `jdbc:h2:file:./data/auctionsdb`. Para reiniciar los datos del ejemplo, detén el servidor y elimina los ficheros que coincidan con `./data/auctionsdb*`.
+
+Se incluye el wrapper de Gradle, por lo que no es necesario instalar Gradle localmente. En Windows, usa `gradlew.bat bootRun` y define la clave en PowerShell con `$env:CURRENCY_API_KEY="your-key"`. En Eclipse o Spring Tool Suite, importa la carpeta como proyecto Gradle existente y ejecuta `AuctionsApplication`.
+
+### Pruebas e integración continua
+
+```bash
+./gradlew test
+```
+
+La batería incluye pruebas unitarias de autenticación y conversión de moneda, pruebas de persistencia H2 del servicio de subastas y pruebas `MockMvc` de los controladores REST. Las pruebas de controladores validan el contrato HTTP sin iniciar un servidor de red ni invocar al servicio externo de moneda.
+
+El [flujo de CI](.github/workflows/ci.yml) ejecuta las pruebas en cada cambio a `master` y en cada pull request. La rama `master` requiere que la comprobación `test` sea correcta antes de integrar cambios.
+
+### Licencia y autoría
+
+Este proyecto se distribuye bajo la [licencia MIT](LICENSE).
+
+Facultad de Ingeniería, Universidad de Deusto — Curso académico 2026–27.
+
+### Declaración sobre asistencia de IA y revisión
+
+La versión inicial de este código se desarrolló con asistencia parcial de ChatGPT (OpenAI) y GitHub Copilot.
+
+Entre julio y septiembre de 2026, el código y la documentación se revisaron y auditaron con Claude Opus (Anthropic) y Codex (OpenAI). La versión resultante fue probada y refinada para identificar y corregir incidencias dentro del alcance de dichas actividades de verificación.
