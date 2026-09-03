@@ -108,4 +108,12 @@ Data is persisted to `./data/auctionsdb`. To start from a **clean database**, st
 
 ---
 
+## ⚖️ License / Licencia
+
+This project is licensed under the [MIT License](LICENSE).
+
+Este proyecto se distribuye bajo la [licencia MIT](LICENSE).
+
+---
+
 > 🧠 *This description was originally generated with the assistance of ChatGPT 5. It was reviewed and updated in July 2026 with the assistance of Claude Opus 4.8 (Anthropic).*
