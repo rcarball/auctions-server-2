@@ -42,8 +42,14 @@ public class CurrencyServiceGateway implements ICurrencyServiceGateway {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
+	@Override
 	public Optional<Double> getExchangeRate(String baseCurrency, String targetCurrency) {
+		// Without a configured key there is no external request to make. Returning an
+		// empty value lets CurrencyService use its documented local fallback rates.
+		if (apiKey == null || apiKey.isBlank()) {
+			return Optional.empty();
+		}
+
         // Build the URL
         String url = apiUrl + "?apikey=" + apiKey + "&base_currency=" + baseCurrency + "&currencies=" + targetCurrency;
 

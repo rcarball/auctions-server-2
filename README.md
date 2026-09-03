@@ -79,7 +79,7 @@ El servidor se comunica con:
 
 ### ⚙️ Configuration
 - **Database**: H2 file-based database at `./data/auctionsdb` (`spring.datasource.*` in `application.properties`).
-- **Currency service**: the API key is read from `currency.api.key` and can be overridden with the `CURRENCY_API_KEY` environment variable (likewise `CURRENCY_API_URL`). The bundled key is a development default and should be rotated and kept out of version control.
+- **Currency service**: configure `CURRENCY_API_KEY` to query FreeCurrencyAPI (and optionally `CURRENCY_API_URL` for another endpoint). No key is stored in the repository; without one, the example uses local EUR/USD/GBP fallback rates.
 
 ---
 
@@ -88,6 +88,13 @@ El servidor se comunica con:
 Requires **JDK 21**. From the project root:
 
 ```bash
+./gradlew bootRun
+```
+
+To enable live currency conversion, set your own FreeCurrencyAPI key before starting the server:
+
+```bash
+export CURRENCY_API_KEY="your-key"
 ./gradlew bootRun
 ```
 
