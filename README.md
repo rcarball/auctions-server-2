@@ -2,6 +2,8 @@
 
 # 🚀 Auctions Server - Version 2
 
+[![CI](https://github.com/rcarball/auctions-server-2/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rcarball/auctions-server-2/actions/workflows/ci.yml)
+
 ## 📘 Description
 
 This repository contains the **second version** of the *Auctions Server*, an **evolution of [Version 1](https://github.com/rcarball/auctions-server-1)**. It extends the functionality introduced in the first version by adding **database persistence** and **external service integration** for currency conversion — creating a more realistic simulation of an online auction platform.
