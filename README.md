@@ -110,6 +110,22 @@ Data is persisted to `./data/auctionsdb`. To start from a **clean database**, st
 
 ---
 
+## 🧪 Testing / Pruebas
+
+Run the automated test suite from the project root:
+
+```bash
+./gradlew test
+```
+
+The suite includes unit tests for authentication and currency conversion, persistence tests against H2 for the auction service, and `MockMvc` tests for the REST controllers. The controller tests exercise the HTTP contract used in Swagger UI or Postman — routes, request parameters, JSON credentials and response codes — without starting a network server or calling the external currency service.
+
+La batería incluye pruebas unitarias de autenticación y conversión de moneda, pruebas de persistencia contra H2 para el servicio de subastas y pruebas `MockMvc` de los controladores REST. Estas últimas verifican automáticamente el mismo contrato HTTP que se explora con Swagger UI o Postman —rutas, parámetros, credenciales JSON y códigos de respuesta— sin iniciar un servidor de red ni llamar al servicio externo de divisas.
+
+The [CI workflow](.github/workflows/ci.yml) runs this command for changes to `master` and for pull requests.
+
+---
+
 ## ✒️ Authors / Autoría
 
 **Carballedo, R. & Cortázar, R.**  
