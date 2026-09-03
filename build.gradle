@@ -37,4 +37,9 @@ dependencies {
 	implementation 'commons-codec:commons-codec'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
 }
