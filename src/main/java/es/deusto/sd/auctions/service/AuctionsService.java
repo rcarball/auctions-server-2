@@ -58,6 +58,12 @@ public class AuctionsService {
 	// bids on the same article, preventing lost updates.
 	@Transactional
 	public void makeBid(User user, long articleId, double amount) {
+		// A price must be a meaningful, finite number. In particular, comparisons with
+		// NaN are always false, so accepting it would bypass the current-price check.
+		if (!Double.isFinite(amount) || amount <= 0.0) {
+			throw new IllegalArgumentException("Bid amount must be a finite positive number");
+		}
+
 		// Retrieve the article by ID, locking its row for the duration of the transaction
 		Optional<Article> article = articleRepository.findByIdForUpdate(articleId);
 

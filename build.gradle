@@ -35,4 +35,6 @@ dependencies {
 
 	// Apache Commons Codec for SHA-1 password hashing (version managed by Spring Boot)
 	implementation 'commons-codec:commons-codec'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

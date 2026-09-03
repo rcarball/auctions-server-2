@@ -171,9 +171,9 @@ public class AuctionsController {
 	@Operation(
 	    summary = "Make a bid on an article",
 	    description = "Allows a user to make a bid on a specified article within a category",
-	    responses = {
-	        @ApiResponse(responseCode = "204", description = "No Content: Bid placed successfully"),
-			@ApiResponse(responseCode = "400", description = "Bad Request: Currency not supported"),
+		responses = {
+		        @ApiResponse(responseCode = "204", description = "No Content: Bid placed successfully"),
+				@ApiResponse(responseCode = "400", description = "Bad Request: Currency not supported or bid amount is invalid"),
 	        @ApiResponse(responseCode = "401", description = "Unauthorized: User not authenticated"),
 	        @ApiResponse(responseCode = "404", description = "Not Found: Article not found"),
 	        @ApiResponse(responseCode = "409", description = "Conflict: Bid amount must be greater than the current price"),
@@ -217,8 +217,10 @@ public class AuctionsController {
 	    	// NullPointerException, which would mask the original error.
 	    	String message = (e.getMessage() != null) ? e.getMessage() : "";
 
-	        switch (message) {
-	            case "Article not found":
+		        switch (message) {
+		            case "Bid amount must be a finite positive number":
+		                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		            case "Article not found":
 	                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	            case "Bid amount must be greater than the current price":
 	                return new ResponseEntity<>(HttpStatus.CONFLICT);
