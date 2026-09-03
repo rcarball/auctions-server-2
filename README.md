@@ -30,25 +30,53 @@ It illustrates the Data Access Object and Service Gateway patterns, alongside th
 - **Currency service:** no API key is stored in the repository. Without `CURRENCY_API_KEY`, the example uses local EUR/USD/GBP fallback rates.
 - **Optional live conversion:** set `CURRENCY_API_KEY`; use `CURRENCY_API_URL` only to select another compatible endpoint.
 
-### Run on macOS and Linux
+### Run on Windows, macOS and Linux
 
-Requires JDK 21. From the repository root:
+Requires JDK 21.
+
+#### Windows
+
+From PowerShell:
+
+```powershell
+.\gradlew.bat bootRun
+```
+
+To enable live currency conversion:
+
+```powershell
+$env:CURRENCY_API_KEY="your-key"
+.\gradlew.bat bootRun
+```
+
+#### macOS
+
+From the repository root:
 
 ```bash
 chmod +x gradlew  # only needed if the executable bit was lost, e.g. after extracting a ZIP
 ./gradlew bootRun
 ```
 
-To enable live currency conversion in macOS or Linux:
+To enable live currency conversion:
 
 ```bash
 export CURRENCY_API_KEY="your-key"
 ./gradlew bootRun
 ```
 
+#### Linux
+
+Use the same commands as macOS:
+
+```bash
+chmod +x gradlew  # only if needed
+./gradlew bootRun
+```
+
 The server starts at [http://localhost:8082](http://localhost:8082). The H2 console is at [http://localhost:8082/h2-console](http://localhost:8082/h2-console), using `jdbc:h2:file:./data/auctionsdb`. To reset the example data, stop the server and remove the files matching `./data/auctionsdb*`.
 
-The Gradle wrapper is included; no local Gradle installation is required. On Windows, use `gradlew.bat bootRun` and set the key with `$env:CURRENCY_API_KEY="your-key"` in PowerShell. In Eclipse or Spring Tool Suite, import the folder as an existing Gradle project and run `AuctionsApplication`.
+The Gradle wrapper is included; no local Gradle installation is required. In Eclipse or Spring Tool Suite on any supported operating system, import the folder as an existing Gradle project and run `AuctionsApplication`.
 
 ### Tests and continuous integration
 
@@ -102,25 +130,53 @@ Ilustra los patrones Data Access Object y Service Gateway, además de los introd
 - **Servicio de moneda:** el repositorio no guarda ninguna clave de API. Sin `CURRENCY_API_KEY`, el ejemplo emplea tasas locales de respaldo para EUR/USD/GBP.
 - **Conversión real opcional:** define `CURRENCY_API_KEY`; usa `CURRENCY_API_URL` solo para seleccionar otro endpoint compatible.
 
-### Ejecución en macOS y Linux
+### Ejecución en Windows, macOS y Linux
 
-Requiere JDK 21. Desde la raíz del repositorio:
+Requiere JDK 21.
+
+#### Windows
+
+Desde PowerShell:
+
+```powershell
+.\gradlew.bat bootRun
+```
+
+Para activar la conversión de moneda real:
+
+```powershell
+$env:CURRENCY_API_KEY="your-key"
+.\gradlew.bat bootRun
+```
+
+#### macOS
+
+Desde la raíz del repositorio:
 
 ```bash
 chmod +x gradlew  # solo si se ha perdido el permiso, por ejemplo tras extraer un ZIP
 ./gradlew bootRun
 ```
 
-Para activar la conversión de moneda real en macOS o Linux:
+Para activar la conversión de moneda real:
 
 ```bash
 export CURRENCY_API_KEY="your-key"
 ./gradlew bootRun
 ```
 
+#### Linux
+
+Utiliza los mismos comandos que en macOS:
+
+```bash
+chmod +x gradlew  # solo si fuera necesario
+./gradlew bootRun
+```
+
 El servidor queda disponible en [http://localhost:8082](http://localhost:8082). La consola H2 está en [http://localhost:8082/h2-console](http://localhost:8082/h2-console), con la URL JDBC `jdbc:h2:file:./data/auctionsdb`. Para reiniciar los datos del ejemplo, detén el servidor y elimina los ficheros que coincidan con `./data/auctionsdb*`.
 
-Se incluye el wrapper de Gradle, por lo que no es necesario instalar Gradle localmente. En Windows, usa `gradlew.bat bootRun` y define la clave en PowerShell con `$env:CURRENCY_API_KEY="your-key"`. En Eclipse o Spring Tool Suite, importa la carpeta como proyecto Gradle existente y ejecuta `AuctionsApplication`.
+Se incluye el wrapper de Gradle, por lo que no es necesario instalar Gradle localmente. En Eclipse o Spring Tool Suite, en cualquiera de los sistemas operativos admitidos, importa la carpeta como proyecto Gradle existente y ejecuta `AuctionsApplication`.
 
 ### Pruebas e integración continua
 
