@@ -1,7 +1,7 @@
 /**
- * This code was originally generated with ChatGPT 4o and adapted using GitHub
- * Copilot. It was reviewed, corrected and updated in July 2026 with the
- * assistance of Claude Opus 4.8 (Anthropic).
+ * Initially generated with ChatGPT 4o and adapted using GitHub Copilot.
+ * Reviewed and updated with assistance from Claude Opus 4.8 (July 2026)
+ * and ChatGPT-6.1 Sol (October 2026).
  */
 package es.deusto.sd.auctions;
 
@@ -15,7 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import es.deusto.sd.auctions.dao.ArticleRepository;
 import es.deusto.sd.auctions.dao.CategoryRepository;
@@ -28,11 +29,17 @@ import es.deusto.sd.auctions.entity.User;
 public class DataInitializer {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
+
+    private final TransactionTemplate transactionTemplate;
+
+    public DataInitializer(PlatformTransactionManager transactionManager) {
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
+    }
 	
     @Bean
-    @Transactional
     CommandLineRunner initData(CategoryRepository categoryRepository, UserRepository userRepository, ArticleRepository articleRepository) {
-		return args -> {
+		// The runner executes after bean creation; its insertions need their own transaction.
+		return args -> transactionTemplate.executeWithoutResult(status -> {
 			// Database is already initialized
             if (categoryRepository.count() > 0) {                
                 return;
@@ -103,6 +110,6 @@ public class DataInitializer {
             // Note: Articles are saved automatically due to CascadeType.ALL in Category entity
 			categoryRepository.saveAll(List.of(electronics, sports, motors));			
 			logger.info("Categories saved!");
-		};
+		});
     }
 }

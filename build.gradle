@@ -1,11 +1,18 @@
+// Initially generated with ChatGPT 4o and adapted using GitHub Copilot.
+// Reviewed and updated with assistance from Claude Opus 4.8 (July 2026)
+// and ChatGPT-6.1 Sol (October 2026).
+
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.1.0'
-	id 'io.spring.dependency-management' version '1.1.6'
+	id 'org.springframework.boot' version '4.1.1'
+	id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'es.deusto.sd.auctions'
 version = '2.0'
+
+// Latest stable maintenance release in the Hibernate 7.4 series used by Boot 4.1.
+ext['hibernate.version'] = '7.4.12.Final'
 
 repositories {
 	mavenCentral()
@@ -22,19 +29,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	// SpringDoc OpenAPI UI Dependency this is needed to use Swagger annotations
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
     
 	// Spring Boot Starter Data JPA for working with JPA and Hibernate
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'	
 
-	// H2 Database for in-memory database
-	runtimeOnly 'com.h2database:h2'
+	// H2 file database (in-memory databases are used in tests)
+	runtimeOnly 'com.h2database:h2:2.5.252'
 
 	// H2 web console (moved to its own module in Spring Boot 4)
 	implementation 'org.springframework.boot:spring-boot-h2console'
 
-	// Apache Commons Codec for SHA-1 password hashing (version managed by Spring Boot)
-	implementation 'commons-codec:commons-codec'
+	// Latest stable Commons Codec, explicitly overriding Spring Boot's managed version.
+	implementation 'commons-codec:commons-codec:1.22.1'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'

@@ -1,11 +1,13 @@
 /**
- * This code was originally generated with ChatGPT 4o and adapted using GitHub
- * Copilot. It was reviewed, corrected and updated in July 2026 with the
- * assistance of Claude Opus 4.8 (Anthropic).
+ * Initially generated with ChatGPT 4o and adapted using GitHub Copilot.
+ * Reviewed and updated with assistance from Claude Opus 4.8 (July 2026)
+ * and ChatGPT-6.1 Sol (October 2026).
  */
 package es.deusto.sd.auctions.external;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -51,7 +53,10 @@ public class CurrencyServiceGateway implements ICurrencyServiceGateway {
 		}
 
         // Build the URL
-        String url = apiUrl + "?apikey=" + apiKey + "&base_currency=" + baseCurrency + "&currencies=" + targetCurrency;
+        String url = apiUrl + (apiUrl.contains("?") ? "&" : "?")
+                + "apikey=" + URLEncoder.encode(apiKey, StandardCharsets.UTF_8)
+                + "&base_currency=" + URLEncoder.encode(baseCurrency, StandardCharsets.UTF_8)
+                + "&currencies=" + URLEncoder.encode(targetCurrency, StandardCharsets.UTF_8);
 
         try {
             // Create the request (with a read timeout)
@@ -80,10 +85,14 @@ public class CurrencyServiceGateway implements ICurrencyServiceGateway {
 					return Optional.empty();
 				}
 
-				return Optional.of(Double.parseDouble(rate.toString()));
+				double value = Double.parseDouble(rate.toString());
+				return Double.isFinite(value) && value > 0.0 ? Optional.of(value) : Optional.empty();
 			} else {
 				return Optional.empty();
 			}
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return Optional.empty();
         } catch (Exception ex) {
         	return Optional.empty();
         }

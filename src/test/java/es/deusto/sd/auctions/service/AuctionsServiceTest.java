@@ -1,3 +1,7 @@
+/**
+ * Entirely generated with ChatGPT-6.1 in September and October 2026.
+ * Reviewed and updated with assistance from ChatGPT-6.1 Sol (October 2026).
+ */
 package es.deusto.sd.auctions.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,6 +18,9 @@ import es.deusto.sd.auctions.dao.ArticleRepository;
 import es.deusto.sd.auctions.dao.CategoryRepository;
 import es.deusto.sd.auctions.dao.UserRepository;
 import es.deusto.sd.auctions.entity.Article;
+import es.deusto.sd.auctions.entity.Bid;
+import es.deusto.sd.auctions.dao.BidRepository;
+import jakarta.persistence.EntityManager;
 import es.deusto.sd.auctions.entity.Category;
 import es.deusto.sd.auctions.entity.User;
 
@@ -28,6 +35,9 @@ class AuctionsServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired private BidRepository bidRepository;
+    @Autowired private EntityManager entityManager;
 
     private AuctionsService service;
     private User bidder;
@@ -61,6 +71,19 @@ class AuctionsServiceTest {
                 () -> service.makeBid(bidder, article.getId(), 100.0));
 
         assertEquals("Bid amount must be greater than the current price", exception.getMessage());
+    }
+
+    @Test
+    void reloadsTheHighestBidRegardlessOfDatabaseRowOrder() {
+        bidRepository.save(new Bid(2000L, 150.0, article, bidder));
+        bidRepository.save(new Bid(1000L, 125.0, article, article.getOwner()));
+        entityManager.flush();
+        entityManager.clear();
+
+        Article reloaded = articleRepository.findById(article.getId()).orElseThrow();
+        assertEquals(150.0, reloaded.getCurrentPrice());
+        assertEquals(bidder, reloaded.getWinner());
+        assertThrows(RuntimeException.class, () -> service.makeBid(bidder, article.getId(), 140.0));
     }
 
     @Test

@@ -1,3 +1,7 @@
+/**
+ * Entirely generated with ChatGPT-6.1 in September and October 2026.
+ * Reviewed and updated with assistance from ChatGPT-6.1 Sol (October 2026).
+ */
 package es.deusto.sd.auctions.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,5 +39,14 @@ class CurrencyServiceTest {
         assertEquals(0.840, service.getExchangeRate("GBP").orElseThrow());
         assertTrue(service.getExchangeRate("JPY").isEmpty());
         assertTrue(service.getExchangeRate(null).isEmpty());
+    }
+
+    @Test
+    void fallsBackWhenTheGatewayReturnsAnInvalidRate() {
+        for (double rate : new double[] {0.0, -1.0, Double.NaN, Double.POSITIVE_INFINITY}) {
+            CurrencyService service = new CurrencyService((base, target) -> Optional.of(rate));
+            assertEquals(1.104, service.getExchangeRate("USD").orElseThrow());
+            assertTrue(service.getExchangeRate("JPY").isEmpty());
+        }
     }
 }

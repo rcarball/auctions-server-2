@@ -1,7 +1,7 @@
 /**
- * This code was originally generated with ChatGPT 4o and adapted using GitHub
- * Copilot. It was reviewed, corrected and updated in July 2026 with the
- * assistance of Claude Opus 4.8 (Anthropic).
+ * Initially generated with ChatGPT 4o and adapted using GitHub Copilot.
+ * Reviewed and updated with assistance from Claude Opus 4.8 (July 2026)
+ * and ChatGPT-6.1 Sol (October 2026).
  */
 package es.deusto.sd.auctions.service;
 
@@ -30,6 +30,9 @@ public class AuthService {
   
     // Login method that checks if the user exists in the database and validates the password
     public Optional<String> login(String email, String password) {
+        if (email == null || password == null) {
+            return Optional.empty();
+        }
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent() && user.get().checkPassword(password)) {

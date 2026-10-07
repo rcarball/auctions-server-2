@@ -1,7 +1,7 @@
 /**
- * This code was originally generated with ChatGPT 4o and adapted using GitHub
- * Copilot. It was reviewed, corrected and updated in July 2026 with the
- * assistance of Claude Opus 4.8 (Anthropic).
+ * Initially generated with ChatGPT 4o and adapted using GitHub Copilot.
+ * Reviewed and updated with assistance from Claude Opus 4.8 (July 2026)
+ * and ChatGPT-6.1 Sol (October 2026).
  */
 package es.deusto.sd.auctions.entity;
 
@@ -20,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 
 @Entity
 public class Article {
@@ -45,6 +46,8 @@ public class Article {
     private User owner;
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    // Current price and winner use the last bid: row order must be explicit on reload.
+    @OrderBy("amount ASC, id ASC")
     private List<Bid> bids = new ArrayList<>();
     
 	// Constructor without parameters

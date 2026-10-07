@@ -1,3 +1,7 @@
+/**
+ * Entirely generated with ChatGPT-6.1 in September and October 2026.
+ * Reviewed and updated with assistance from ChatGPT-6.1 Sol (October 2026).
+ */
 package es.deusto.sd.auctions.facade;
 
 import static org.mockito.Mockito.doThrow;
@@ -57,6 +61,14 @@ class AuctionsControllerWebTest {
 
         mockMvc.perform(get("/auctions/categories/Unknown/articles").param("currency", "EUR"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void preservesLiteralPlusAndPercentCharactersInCategoryNames() throws Exception {
+        when(auctionsService.getArticlesByCategoryName("Books+100%" )).thenReturn(List.of());
+        mockMvc.perform(get("/auctions/categories/{category}/articles", "Books+100%")
+                .param("currency", "EUR")).andExpect(status().isNoContent());
+        verify(auctionsService).getArticlesByCategoryName("Books+100%");
     }
 
     @Test

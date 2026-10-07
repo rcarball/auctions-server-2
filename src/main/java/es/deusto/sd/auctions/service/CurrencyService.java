@@ -1,6 +1,12 @@
+/**
+ * Initially generated with ChatGPT 4o and adapted using GitHub Copilot.
+ * Reviewed and updated with assistance from Claude Opus 4.8 (July 2026)
+ * and ChatGPT-6.1 Sol (October 2026).
+ */
 package es.deusto.sd.auctions.service;
 
 import java.util.Optional;
+import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 
@@ -34,7 +40,7 @@ public class CurrencyService {
     		return Optional.empty();
     	}
 
-    	String normalizedCurrency = currency.toUpperCase();
+        String normalizedCurrency = currency.toUpperCase(Locale.ROOT);
 
     	// The base currency is always 1:1 with itself and never needs the external
     	// service. This guarantees that EUR (the currency all amounts are stored in)
@@ -46,7 +52,7 @@ public class CurrencyService {
     	// Primary source: external currency gateway.
     	Optional<Double> exchangeRate = currencyGateway.getExchangeRate(DEFAULT_CURRENCY, normalizedCurrency);
 
-    	if (exchangeRate.isPresent()) {
+        if (exchangeRate.isPresent() && Double.isFinite(exchangeRate.get()) && exchangeRate.get() > 0.0) {
     		return exchangeRate;
     	}
 
