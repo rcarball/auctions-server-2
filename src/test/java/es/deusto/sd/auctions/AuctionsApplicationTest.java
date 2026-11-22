@@ -128,6 +128,11 @@ class AuctionsApplicationTest {
         assertTrue(api.body().contains("/auctions/articles/{articleId}/bid"));
         var paths = JsonMapper.builder().build().readTree(api.body()).get("paths");
         assertTrue(paths.at("/~1auth~1login/post/responses/200/content").has("text/plain"));
+        var demoLogin = paths.at("/~1auth~1login/post/requestBody/content/application~1json/examples/demoLogin/value");
+        assertEquals("blackwidow@marvel.com", demoLogin.path("email").asString());
+        HttpResponse<String> login = post("/auth/login", "application/json", demoLogin.toString());
+        assertEquals(200, login.statusCode());
+        assertEquals(204, post("/auth/logout", "text/plain", login.body()).statusCode());
         assertTrue(paths.at("/~1auth~1logout/post/requestBody/content").has("text/plain"));
         assertTrue(paths.at("/~1auctions~1articles~1{articleId}~1bid/post/requestBody/content").has("text/plain"));
         HttpResponse<String> ui = get("/swagger-ui/index.html");

@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import es.deusto.sd.auctions.dto.CredentialsDTO;
 import es.deusto.sd.auctions.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -43,8 +46,25 @@ public class AuthController {
     )
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> login(
-    		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User's credentials", required = true)
-    		@RequestBody CredentialsDTO credentials) {    	
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "User credentials",
+                required = true,
+                content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = CredentialsDTO.class),
+                    examples = @ExampleObject(
+                        name = "demoLogin",
+                        summary = "Black Widow demo account",
+                        value = """
+                            {
+                              "email": "blackwidow@marvel.com",
+                              "password": "Bl@ckWid0w2023"
+                            }
+                            """
+                    )
+                )
+            )
+            @RequestBody CredentialsDTO credentials) {
         Optional<String> token = authService.login(credentials.getEmail(), credentials.getPassword());
         
     	if (token.isPresent()) {
