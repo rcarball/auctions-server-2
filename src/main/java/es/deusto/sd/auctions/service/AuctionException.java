@@ -1,7 +1,9 @@
 package es.deusto.sd.auctions.service;
 
 public class AuctionException extends RuntimeException {
-    public enum Reason {
+    private static final long serialVersionUID = 1L;
+
+	public enum Reason {
         NOT_FOUND,
         INVALID_AMOUNT,
         BID_TOO_LOW,
