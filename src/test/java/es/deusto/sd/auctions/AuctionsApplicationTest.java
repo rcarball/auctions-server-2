@@ -126,6 +126,10 @@ class AuctionsApplicationTest {
         assertEquals(200, api.statusCode());
         assertTrue(api.body().contains("/auth/login"));
         assertTrue(api.body().contains("/auctions/articles/{articleId}/bid"));
+        var paths = JsonMapper.builder().build().readTree(api.body()).get("paths");
+        assertTrue(paths.at("/~1auth~1login/post/responses/200/content").has("text/plain"));
+        assertTrue(paths.at("/~1auth~1logout/post/requestBody/content").has("text/plain"));
+        assertTrue(paths.at("/~1auctions~1articles~1{articleId}~1bid/post/requestBody/content").has("text/plain"));
         HttpResponse<String> ui = get("/swagger-ui/index.html");
         assertEquals(200, ui.statusCode());
         assertTrue(ui.body().contains("swagger-ui"));
@@ -147,6 +151,29 @@ class AuctionsApplicationTest {
         assertEquals(409, post("/auctions/articles/1/bid?amount=1500&currency=EUR", "text/plain", token).statusCode());
         assertEquals(204, post("/auth/logout", "text/plain", token).statusCode());
         assertEquals(401, post("/auctions/articles/1/bid?amount=1600&currency=EUR", "text/plain", token).statusCode());
+    }
+
+    @Test
+    void rejectsThePublishedGbpPriceAndAcceptsAHigherBid() throws Exception {
+        var mapper = JsonMapper.builder().build();
+        var articles = mapper.readTree(get("/auctions/categories/Motors/articles?currency=GBP").body());
+        var article = java.util.stream.StreamSupport.stream(articles.spliterator(), false)
+                .filter(item -> item.get("title").asString().startsWith("MG ZS"))
+                .findFirst().orElseThrow();
+        long id = article.get("id").asLong();
+        String bidPath = "/auctions/articles/" + id + "/bid?currency=GBP&amount=";
+        String credentials = "{\"email\":\"batman@dc.com\",\"password\":\"Batm@n123!\"}";
+        HttpResponse<String> login = post("/auth/login", "application/json", credentials);
+        assertEquals(200, login.statusCode());
+        String token = login.body();
+        double price = article.get("currentPrice").asDouble();
+
+        assertEquals(409, post(bidPath + price, "text/plain", token).statusCode());
+        assertEquals(204, post(bidPath + (price + 0.01), "text/plain", token).statusCode());
+        var details = mapper.readTree(get("/auctions/articles/" + id + "/details?currency=GBP").body());
+        assertEquals(article.get("bids").asInt() + 1, details.get("bids").asInt());
+        assertEquals(price + 0.01, details.get("currentPrice").asDouble(), 0.000001);
+        assertEquals(204, post("/auth/logout", "text/plain", token).statusCode());
     }
 
     @Test

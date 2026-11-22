@@ -27,8 +27,9 @@ It illustrates the Data Access Object and Service Gateway patterns, alongside th
 ### Configuration
 
 - **Database:** H2 file database at `./data/auctionsdb`.
-- **Currency service:** no API key is stored in the repository. Without `CURRENCY_API_KEY`, the example uses local EUR/USD/GBP fallback rates.
+- **Currency service:** without an API key, the example uses local EUR/USD/GBP fallback rates.
 - **Optional live conversion:** set `CURRENCY_API_KEY`; use `CURRENCY_API_URL` only to select another compatible endpoint.
+- **Local configuration file:** when starting from the project root, you can set `currency.api.key` in `config/application.properties`. Git ignores that file. If both are configured, the environment variable takes precedence.
 
 ### Run on Windows, macOS and Linux
 
@@ -150,8 +151,9 @@ Ilustra los patrones Data Access Object y Service Gateway, además de los introd
 ### Configuración
 
 - **Base de datos:** base de datos H2 en fichero, en `./data/auctionsdb`.
-- **Servicio de moneda:** el repositorio no guarda ninguna clave de API. Sin `CURRENCY_API_KEY`, el ejemplo emplea tasas locales de respaldo para EUR/USD/GBP.
+- **Servicio de moneda:** sin clave de API, el ejemplo emplea tasas locales de respaldo para EUR/USD/GBP.
 - **Conversión real opcional:** define `CURRENCY_API_KEY`; usa `CURRENCY_API_URL` solo para seleccionar otro endpoint compatible.
+- **Archivo de configuración local:** si arrancas desde la raíz del proyecto, puedes definir `currency.api.key` en `config/application.properties`. Git ignora ese archivo. Si defines ambos valores, prevalece la variable de entorno.
 
 ### Ejecución en Windows, macOS y Linux
 

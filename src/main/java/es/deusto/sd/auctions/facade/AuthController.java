@@ -8,6 +8,7 @@ package es.deusto.sd.auctions.facade;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +41,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid credentials, login failed"),
         }
     )
-    @PostMapping("/login")
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> login(
     		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User's credentials", required = true)
     		@RequestBody CredentialsDTO credentials) {    	
@@ -60,9 +61,10 @@ public class AuthController {
         responses = {
             @ApiResponse(responseCode = "204", description = "No Content: Logout successful"),
             @ApiResponse(responseCode = "401", description = "Unauthorized: Invalid token, logout failed"),
+            @ApiResponse(responseCode = "415", description = "Unsupported Media Type: Send the token as plain text"),
         }
     )    
-    @PostMapping("/logout")    
+    @PostMapping(value = "/logout", consumes = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<Void> logout(
     		@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Authorization token in plain text", required = true)
     		@RequestBody String token) {    	

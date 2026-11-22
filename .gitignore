@@ -3,6 +3,9 @@ build/
 bin/
 out/
 
+# ===================== Local Spring Boot configuration =====================
+/config/application.properties
+
 # ===================== Gradle =====================
 .gradle/
 # NOTE: the Gradle wrapper is committed on purpose (gradlew, gradlew.bat and

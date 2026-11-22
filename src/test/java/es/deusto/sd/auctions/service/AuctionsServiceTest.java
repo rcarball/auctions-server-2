@@ -109,8 +109,8 @@ class AuctionsServiceTest {
     }
 
     private void assertInvalidAmount(double amount) {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        AuctionException exception = assertThrows(AuctionException.class,
                 () -> service.makeBid(bidder, article.getId(), amount));
-        assertEquals("Bid amount must be a finite positive number", exception.getMessage());
+        assertEquals(AuctionException.Reason.INVALID_AMOUNT, exception.getReason());
     }
 }

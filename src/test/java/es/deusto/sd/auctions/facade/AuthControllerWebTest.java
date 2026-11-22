@@ -44,6 +44,7 @@ class AuthControllerWebTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"student@example.com\",\"password\":\"password-hash\"}"))
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
                 .andExpect(content().string("token-123"));
     }
 
@@ -61,7 +62,7 @@ class AuthControllerWebTest {
     void logoutReturnsNoContentForValidToken() throws Exception {
         when(authService.logout("token-123")).thenReturn(Optional.of(true));
 
-        mockMvc.perform(post("/auth/logout").content("token-123"))
+        mockMvc.perform(post("/auth/logout").contentType(MediaType.TEXT_PLAIN).content("token-123"))
                 .andExpect(status().isNoContent());
     }
 
@@ -69,7 +70,7 @@ class AuthControllerWebTest {
     void logoutRejectsUnknownToken() throws Exception {
         when(authService.logout("unknown-token")).thenReturn(Optional.empty());
 
-        mockMvc.perform(post("/auth/logout").content("unknown-token"))
+        mockMvc.perform(post("/auth/logout").contentType(MediaType.TEXT_PLAIN).content("unknown-token"))
                 .andExpect(status().isUnauthorized());
     }
 }

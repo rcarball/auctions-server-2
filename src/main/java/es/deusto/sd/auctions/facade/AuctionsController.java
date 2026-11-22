@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import es.deusto.sd.auctions.dto.CategoryDTO;
 import es.deusto.sd.auctions.entity.Article;
 import es.deusto.sd.auctions.entity.Category;
 import es.deusto.sd.auctions.entity.User;
+import es.deusto.sd.auctions.service.AuctionException;
 import es.deusto.sd.auctions.service.AuctionsService;
 import es.deusto.sd.auctions.service.AuthService;
 import es.deusto.sd.auctions.service.CurrencyService;
@@ -94,34 +97,18 @@ public class AuctionsController {
 			@PathVariable("categoryName") String category,
 			@Parameter(name = "currency", description = "Currency", required = true, example = "GBP")
 			@RequestParam("currency") String currentCurrency) {
-		try {
-			// Spring has already decoded the path variable; decoding again corrupts + and %.
-			List<Article> articles = auctionsService.getArticlesByCategoryName(category);
-						
-			if (articles.isEmpty()) {
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			}
-
-			Optional<Double> exchangeRate = currencyService.getExchangeRate(currentCurrency);
-			
-			if (!exchangeRate.isPresent()) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-			
-			List<ArticleDTO> dtos = new ArrayList<>();
-			articles.forEach(article -> dtos.add(articleToDTO(article, exchangeRate.get(), currentCurrency)));
-			
-			return new ResponseEntity<>(dtos, HttpStatus.OK);
-		} catch (RuntimeException e) {
-			// Only "Category not found" maps to 404; any other runtime error is a 500
-			// so we don't hide unexpected failures behind a misleading Not Found.
-			if ("Category not found".equals(e.getMessage())) {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		// Spring has already decoded the path variable.
+		List<Article> articles = auctionsService.getArticlesByCategoryName(category);
+		Optional<Double> exchangeRate = currencyService.getExchangeRate(currentCurrency);
+		if (exchangeRate.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+		if (articles.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		List<ArticleDTO> dtos = new ArrayList<>();
+		articles.forEach(article -> dtos.add(articleToDTO(article, exchangeRate.get(), currentCurrency)));
+		return new ResponseEntity<>(dtos, HttpStatus.OK);
 	}
 	
 	// GET details of an article by ID
@@ -174,10 +161,11 @@ public class AuctionsController {
 	        @ApiResponse(responseCode = "404", description = "Not Found: Article not found"),
 	        @ApiResponse(responseCode = "409", description = "Conflict: Bid amount must be greater than the current price"),
 	        @ApiResponse(responseCode = "410", description = "Gone: The auction has already ended"),
+	        @ApiResponse(responseCode = "415", description = "Unsupported Media Type: Send the token as plain text"),
 	        @ApiResponse(responseCode = "500", description = "Internal server error")
 	    }
 	)
-	@PostMapping("/articles/{articleId}/bid")
+	@PostMapping(value = "/articles/{articleId}/bid", consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<Void> makeBid(
 			@Parameter(name = "articleId", description = "ID of the article to bid on", required = true, example = "1")		
 			@PathVariable("articleId") long id,
@@ -186,46 +174,28 @@ public class AuctionsController {
     		@Parameter(name = "currency", description = "Currency", required = true, example = "EUR")
 			@RequestParam("currency") String currentCurrency,
 			@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Authorization token in plain text", required = true)
-			@RequestBody String token) { 
-	    try {	    	
-	    	User user = authService.getUserByToken(token);
-	    	
-	    	if (user == null) {
-	    		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	    	}
-	    	
-			Optional<Double> exchangeRate = currencyService.getExchangeRate(currentCurrency);
-			
-			if (!exchangeRate.isPresent()) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-	    	
-			// Amounts are stored in EUR, so convert the incoming bid (expressed in the
-			// requested currency) back to EUR by dividing by the exchange rate.
-			// For EUR the rate is 1, so this is a no-op.
-			price /= exchangeRate.get();
+			@RequestBody String token) {
+		User user = authService.getUserByToken(token);
+		if (user == null) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		Optional<Double> exchangeRate = currencyService.getExchangeRate(currentCurrency);
+		if (exchangeRate.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		auctionsService.makeBid(user, id, price, exchangeRate.get());
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
 
-	        auctionsService.makeBid(user, id, price);
-
-	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	    } catch (Exception e) {
-	    	// Guard against a null message: switch(null) on a String throws
-	    	// NullPointerException, which would mask the original error.
-	    	String message = (e.getMessage() != null) ? e.getMessage() : "";
-
-		        switch (message) {
-		            case "Bid amount must be a finite positive number":
-		                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		            case "Article not found":
-	                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	            case "Bid amount must be greater than the current price":
-	                return new ResponseEntity<>(HttpStatus.CONFLICT);
-	            case "Auction has ended":
-	                return new ResponseEntity<>(HttpStatus.GONE);
-	            default:
-	                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    }
+	@ExceptionHandler(AuctionException.class)
+	public ResponseEntity<Void> handleAuctionException(AuctionException exception) {
+		HttpStatus status = switch (exception.getReason()) {
+			case NOT_FOUND -> HttpStatus.NOT_FOUND;
+			case INVALID_AMOUNT -> HttpStatus.BAD_REQUEST;
+			case BID_TOO_LOW -> HttpStatus.CONFLICT;
+			case AUCTION_ENDED -> HttpStatus.GONE;
+		};
+		return new ResponseEntity<>(status);
 	}
 
 	// Converts a Category to a CategoryDTO (Assembler Method)

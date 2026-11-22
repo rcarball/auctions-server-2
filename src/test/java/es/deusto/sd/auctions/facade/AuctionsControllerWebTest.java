@@ -20,11 +20,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import es.deusto.sd.auctions.entity.Category;
 import es.deusto.sd.auctions.entity.User;
+import es.deusto.sd.auctions.service.AuctionException;
+import es.deusto.sd.auctions.service.AuctionException.Reason;
 import es.deusto.sd.auctions.service.AuctionsService;
 import es.deusto.sd.auctions.service.AuthService;
 import es.deusto.sd.auctions.service.CurrencyService;
@@ -57,7 +60,7 @@ class AuctionsControllerWebTest {
     @Test
     void articlesEndpointReturnsNotFoundForUnknownCategory() throws Exception {
         when(auctionsService.getArticlesByCategoryName("Unknown"))
-                .thenThrow(new RuntimeException("Category not found"));
+                .thenThrow(new AuctionException(Reason.NOT_FOUND, "No matching category"));
 
         mockMvc.perform(get("/auctions/categories/Unknown/articles").param("currency", "EUR"))
                 .andExpect(status().isNotFound());
@@ -66,9 +69,19 @@ class AuctionsControllerWebTest {
     @Test
     void preservesLiteralPlusAndPercentCharactersInCategoryNames() throws Exception {
         when(auctionsService.getArticlesByCategoryName("Books+100%" )).thenReturn(List.of());
+        when(currencyService.getExchangeRate("EUR")).thenReturn(Optional.of(1.0));
         mockMvc.perform(get("/auctions/categories/{category}/articles", "Books+100%")
                 .param("currency", "EUR")).andExpect(status().isNoContent());
         verify(auctionsService).getArticlesByCategoryName("Books+100%");
+    }
+
+    @Test
+    void rejectsUnsupportedCurrencyForAnEmptyCategory() throws Exception {
+        when(auctionsService.getArticlesByCategoryName("Empty")).thenReturn(List.of());
+        when(currencyService.getExchangeRate("JPY")).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/auctions/categories/Empty/articles").param("currency", "JPY"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -76,6 +89,7 @@ class AuctionsControllerWebTest {
         mockMvc.perform(post("/auctions/articles/1/bid")
                 .param("amount", "125")
                 .param("currency", "EUR")
+                .contentType(MediaType.TEXT_PLAIN)
                 .content("invalid-token"))
                 .andExpect(status().isUnauthorized());
     }
@@ -84,12 +98,13 @@ class AuctionsControllerWebTest {
     void bidEndpointReturnsBadRequestForInvalidAmount() throws Exception {
         when(authService.getUserByToken("token-123")).thenReturn(user);
         when(currencyService.getExchangeRate("EUR")).thenReturn(Optional.of(1.0));
-        doThrow(new IllegalArgumentException("Bid amount must be a finite positive number"))
-                .when(auctionsService).makeBid(user, 1L, 0.0);
+        doThrow(new AuctionException(Reason.INVALID_AMOUNT, "Invalid amount"))
+                .when(auctionsService).makeBid(user, 1L, 0.0, 1.0);
 
         mockMvc.perform(post("/auctions/articles/1/bid")
                 .param("amount", "0")
                 .param("currency", "EUR")
+                .contentType(MediaType.TEXT_PLAIN)
                 .content("token-123"))
                 .andExpect(status().isBadRequest());
     }
@@ -98,27 +113,29 @@ class AuctionsControllerWebTest {
     void bidEndpointReturnsConflictForLowBid() throws Exception {
         when(authService.getUserByToken("token-123")).thenReturn(user);
         when(currencyService.getExchangeRate("EUR")).thenReturn(Optional.of(1.0));
-        doThrow(new RuntimeException("Bid amount must be greater than the current price"))
-                .when(auctionsService).makeBid(user, 1L, 100.0);
+        doThrow(new AuctionException(Reason.BID_TOO_LOW, "Bid too low"))
+                .when(auctionsService).makeBid(user, 1L, 100.0, 1.0);
 
         mockMvc.perform(post("/auctions/articles/1/bid")
                 .param("amount", "100")
                 .param("currency", "EUR")
+                .contentType(MediaType.TEXT_PLAIN)
                 .content("token-123"))
                 .andExpect(status().isConflict());
     }
 
     @Test
-    void bidEndpointConvertsCurrencyAndReturnsNoContent() throws Exception {
+    void bidEndpointPassesTheAmountAndRateToTheService() throws Exception {
         when(authService.getUserByToken("token-123")).thenReturn(user);
         when(currencyService.getExchangeRate("GBP")).thenReturn(Optional.of(0.8));
 
         mockMvc.perform(post("/auctions/articles/1/bid")
                 .param("amount", "100")
                 .param("currency", "GBP")
+                .contentType(MediaType.TEXT_PLAIN)
                 .content("token-123"))
                 .andExpect(status().isNoContent());
 
-        verify(auctionsService).makeBid(user, 1L, 125.0);
+        verify(auctionsService).makeBid(user, 1L, 100.0, 0.8);
     }
 }

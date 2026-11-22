@@ -17,6 +17,7 @@ import es.deusto.sd.auctions.entity.Article;
 import es.deusto.sd.auctions.entity.Bid;
 import es.deusto.sd.auctions.entity.Category;
 import es.deusto.sd.auctions.entity.User;
+import es.deusto.sd.auctions.service.AuctionException.Reason;
 
 @Service
 public class AuctionsService {
@@ -39,7 +40,7 @@ public class AuctionsService {
 	    Optional<Category> category = categoryRepository.findByName(categoryName);
 
         if (category.isEmpty()) {
-            throw new RuntimeException("Category not found");
+            throw new AuctionException(Reason.NOT_FOUND, "Category not found");
         }
         
         return category.get().getArticles();
@@ -58,17 +59,23 @@ public class AuctionsService {
 	// bids on the same article, preventing lost updates.
 	@Transactional
 	public void makeBid(User user, long articleId, double amount) {
+		makeBid(user, articleId, amount, 1.0);
+	}
+
+	@Transactional
+	public void makeBid(User user, long articleId, double amount, double exchangeRate) {
+		double amountInEur = amount / exchangeRate;
 		// A price must be a meaningful, finite number. In particular, comparisons with
 		// NaN are always false, so accepting it would bypass the current-price check.
-		if (!Double.isFinite(amount) || amount <= 0.0) {
-			throw new IllegalArgumentException("Bid amount must be a finite positive number");
+		if (!Double.isFinite(amountInEur) || amountInEur <= 0.0) {
+			throw new AuctionException(Reason.INVALID_AMOUNT, "Bid amount must be a finite positive number");
 		}
 
 		// Retrieve the article by ID, locking its row for the duration of the transaction
 		Optional<Article> article = articleRepository.findByIdForUpdate(articleId);
 
 		if (article.isEmpty()) {
-			throw new RuntimeException("Article not found");
+			throw new AuctionException(Reason.NOT_FOUND, "Article not found");
 		}
 
 		Article foundArticle = article.get();
@@ -76,15 +83,18 @@ public class AuctionsService {
 		// A bid can only be placed while the auction is still open.
 		if (foundArticle.getAuctionEnd() != null
 				&& System.currentTimeMillis() >= foundArticle.getAuctionEnd().getTime()) {
-			throw new RuntimeException("Auction has ended");
+			throw new AuctionException(Reason.AUCTION_ENDED, "Auction has ended");
 		}
 
-		if (amount <= foundArticle.getCurrentPrice()) {
-			throw new RuntimeException("Bid amount must be greater than the current price");
+		double currentPrice = foundArticle.getCurrentPrice();
+		// Compare against the published price before converting back to EUR.
+		// Also require a strict increase in the stored amount after conversion.
+		if (amount <= currentPrice * exchangeRate || amountInEur <= currentPrice) {
+			throw new AuctionException(Reason.BID_TOO_LOW, "Bid amount must be greater than the current price");
 		}
 
 		// Create a new bid and associate it with the article
-		Bid bid = new Bid(System.currentTimeMillis(), amount, foundArticle, user);
+		Bid bid = new Bid(System.currentTimeMillis(), amountInEur, foundArticle, user);
 		foundArticle.getBids().add(bid);
 
         // Save updated article with the new bid
